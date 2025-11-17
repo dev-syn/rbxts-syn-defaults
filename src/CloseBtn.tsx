@@ -1,4 +1,4 @@
-import React, { Component } from '@rbxts/react';
+import React, { Component, useRef } from '@rbxts/react';
 import { NameInstance } from './helpers/NameInstance';
 
 const DEFAULT_CLOSE: string = "http://www.roblox.com/asset/?id=6031094678";
@@ -17,11 +17,13 @@ export function CloseBtn(btnProps: CloseBtnProps) {
 	const btnSize = btnProps.size ?? DEFAULT_SIZE;
 	const tintColor = btnProps.tintColor ?? DEFAULT_TINT_COLOR;
 
+	const btnRef = useRef<ImageButton>();
 	return (
 		<NameInstance
 		name={"CloseBtn"}
 		inst={
 			<imagebutton
+			ref={btnRef}
 			Image={btnContent}
 			ScaleType={Enum.ScaleType.Fit}
 			Size={btnSize}
@@ -31,7 +33,16 @@ export function CloseBtn(btnProps: CloseBtnProps) {
 			AutoButtonColor={false}
 			Event={{
 				MouseButton1Click: () => {
-					btnProps.onClick();
+					if (btnRef.current) {
+						const parentInst = btnRef.current.Parent;
+
+						if (parentInst && parentInst.IsA("GuiObject")) {
+							parentInst.Visible = false;
+						}
+
+						// Close the parent Instance of the close button
+						btnProps.onClick();
+					}
 				}
 			}}
 			>
