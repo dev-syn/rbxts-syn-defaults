@@ -29,6 +29,11 @@ export function CloseBtn(btnProps: CloseBtnProps) {
 			Position={new UDim2(1,0,0,0)}
 			BackgroundTransparency={1}
 			AutoButtonColor={false}
+			Event={{
+				MouseButton1Click: () => {
+					btnProps.onClick();
+				}
+			}}
 			>
 				<uiaspectratioconstraint
 				AspectType={Enum.AspectType.FitWithinMaxSize}
