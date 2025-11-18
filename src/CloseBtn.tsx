@@ -1,5 +1,4 @@
 import React, { Component, useRef } from '@rbxts/react';
-import { NameInstance } from './helpers/NameInstance';
 
 const DEFAULT_CLOSE: string = "http://www.roblox.com/asset/?id=6031094678";
 const DEFAULT_SIZE: UDim2 = new UDim2(0.1,0,0.1,0);
@@ -19,10 +18,8 @@ export function CloseBtn(btnProps: CloseBtnProps) {
 
 	const btnRef = useRef<ImageButton>();
 	return (
-		<NameInstance
-		name={"CloseBtn"}
-		inst={
-			<imagebutton
+		<imagebutton
+			key={"CloseBtn"}
 			ref={btnRef}
 			Image={btnContent}
 			ScaleType={Enum.ScaleType.Fit}
@@ -45,13 +42,12 @@ export function CloseBtn(btnProps: CloseBtnProps) {
 					}
 				}
 			}}
-			>
-				<uiaspectratioconstraint
+		>
+			<uiaspectratioconstraint
 				AspectType={Enum.AspectType.FitWithinMaxSize}
 				DominantAxis={Enum.DominantAxis.Height}
 				AspectRatio={1}
-				/>
-			</imagebutton>
-		}/>
+			/>
+		</imagebutton>
 	);
 }
