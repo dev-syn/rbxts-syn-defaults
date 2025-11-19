@@ -1,0 +1,6 @@
+{
+	"name": "syn_defaults",
+	"tree": {
+		"$path": "src"
+	}
+}
