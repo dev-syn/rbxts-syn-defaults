@@ -2,7 +2,7 @@
   "name": "@rbxts/syn-defaults",
   "version": "0.1.0",
   "description": "",
-  "main": "src/index.ts",
+  "main": "out/init.luau",
   "scripts": {
     "build": "rbxtsc",
     "watch": "rbxtsc -w",
