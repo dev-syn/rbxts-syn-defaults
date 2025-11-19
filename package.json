@@ -4,12 +4,14 @@
   "description": "",
   "main": "out/init.luau",
   "scripts": {
-    "build": "rbxtsc",
-    "watch": "rbxtsc -w",
+    "build": "rbxtsc -p ./ts_config/tsconfig.pkg.json",
+		"build:d": "rbxtsc -p ./ts_config/tsconfig.test.json",
+    "watch": "rbxtsc -p ./ts_config/tsconfig.pkg.json -w",
+		"watch:d": "rbxtsc -p ./ts_config/tsconfig.test.json -w",
     "prepublishOnly": "npm run build"
   },
   "keywords": [],
-  "author": "",
+  "author": "dev-syn",
   "license": "ISC",
   "type": "commonjs",
   "types": "out/index.d.ts",
