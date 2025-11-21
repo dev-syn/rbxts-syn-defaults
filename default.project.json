@@ -1,6 +1,8 @@
 {
 	"name": "syn_defaults",
-	"tree": {
-		"$path": "out"
-	}
+	"globIgnorePaths": [
+		"**/package.json",
+		"**/tsconfig.json"
+	],
+	"tree": {"$path": "out"}
 }
