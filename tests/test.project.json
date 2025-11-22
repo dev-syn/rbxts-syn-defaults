@@ -21,7 +21,7 @@
 		},
 		"StarterPlayer": {
 			"StarterPlayerScripts": {
-				"testRunner": { "$path": "../out/tests/testRunner.client.lua" }
+				"testRunner": { "$path": "../out/tests/testRunner.client.luau" }
 			}
 		}
 	}
