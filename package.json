@@ -4,10 +4,10 @@
   "description": "",
   "main": "out/init.luau",
   "scripts": {
-    "build": "rbxtsc -p ./ts_config/tsconfig.pkg.json",
-		"build:d": "rbxtsc -p ./ts_config/tsconfig.test.json",
-    "watch": "rbxtsc -p ./ts_config/tsconfig.pkg.json -w",
-		"watch:d": "rbxtsc -p ./ts_config/tsconfig.test.json -w",
+    "build": "rbxtsc -p ./tsconfig.pkg.json --rojo default.project.json",
+		"build:d": "rbxtsc -p ./tsconfig.test.json --rojo tests/test.project.json --type game",
+    "watch": "rbxtsc -p ./tsconfig.pkg.json --rojo default.project.json -w",
+		"watch:d": "rbxtsc -p ./tsconfig.test.json --rojo tests/test.project.json --type game -w",
     "prepublishOnly": "npm run build"
   },
   "keywords": [],
