@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from '@rbxts/react';
 import { Signal } from '@rbxts/beacon';
-import { $warn } from 'rbxts-transform-debug';
 import { Players, RunService, UserInputService } from '@rbxts/services';
 
 interface BoundCheckOptions {
@@ -73,7 +72,7 @@ export function useBoundCheck(
 		if (owner && !ancestorSGRef.current) {
 			const ancestor = owner.FindFirstAncestorWhichIsA("ScreenGui");
 			if (!ancestor) {
-				$warn("BoundCheck is missing a ScreenGui ancestor. No bounds will be queried.");
+				warn("BoundCheck is missing a ScreenGui ancestor. No bounds will be queried.");
 				return;
 			}
 			ancestorSGRef.current = ancestor;
