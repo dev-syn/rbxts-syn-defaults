@@ -3,8 +3,7 @@
 	"compilerOptions": {
 		"outDir": "out",
 		"rootDirs": ["src","tests"],
-		"typeRoots": ["node_modules/@rbxts"],
-		"declaration": false
+		"typeRoots": ["node_modules/@rbxts"]
 	},
 	"include": ["src","tests"]
 }
