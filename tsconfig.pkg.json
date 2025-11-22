@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "./out",
+		"rootDir": "./src",
+		"declaration": true,
+		"typeRoots": ["./node_modules/@rbxts"]
+	},
+	"include": ["./src"]
+}

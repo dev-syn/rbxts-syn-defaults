@@ -15,10 +15,9 @@
 		"moduleDetection": "force",
 		"strict": true,
 		"target": "ESNext",
-		"typeRoots": ["../node_modules/@rbxts"],
 
 		// configurable
 		"incremental": true,
-		"tsBuildInfoFile": "../out/tsconfig.tsbuildinfo",
+		"tsBuildInfoFile": "out/tsconfig.tsbuildinfo",
 	}
 }
