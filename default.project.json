@@ -8,10 +8,13 @@
 		"$className": "Folder",
 		"syn-defaults": { "$path": "out" },
 		"rbxts_include": {
-			"$path": "include",
-			"node_modules": {
-				"$path": "node_modules/@rbxts"
-			}
-		}
+      "$path": "include",
+      "node_modules": {
+        "$className": "Folder",
+        "@rbxts": {
+          "$path": "node_modules/@rbxts"
+        }
+      }
+    }
 	}
 }

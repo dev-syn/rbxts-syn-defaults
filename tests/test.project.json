@@ -9,15 +9,19 @@
 
 		"ReplicatedStorage": {
 			"rbxts_include": {
-				"$path": "../include",
-				"node_modules": {
-					"$className": "Folder",
-					"@rbxts": {
-						"$path": "../node_modules/@rbxts"
-					}
-				}
-			},
-			"syn-defaults": { "$path": "../out/src" }
+        "$path": "../include",
+        "node_modules": {
+          "$className": "Folder",
+          "@rbxts": {
+            "$path": "../node_modules/@rbxts"
+          }
+        }
+      },
+			"syn-defaults": {
+				"$path": "../out/src",
+
+				"App": { "$path": "../out/tests/App.luau" }
+			}
 		},
 		"StarterPlayer": {
 			"StarterPlayerScripts": {
