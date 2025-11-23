@@ -1,4 +1,4 @@
-import React, { Component, useRef } from '@rbxts/react';
+import React, { useRef } from '@rbxts/react';
 
 const DEFAULT_CLOSE: string = "http://www.roblox.com/asset/?id=6031094678";
 const DEFAULT_SIZE: UDim2 = new UDim2(0.1,0,0.1,0);
