@@ -74261,6 +74261,21 @@ X09yaWdpbmFsVGVjaG5vbG9neU9uRmlsZUxvYWQEAQAAAA==]]></BinaryString>
 			<UniqueId name="UniqueId">626e6fa6ec504027093382c30000071f</UniqueId>
 		</Properties>
 	</Item>
+	<Item class="ProximityPromptService" referent="RBX9A0A93F0FC1741D7928EDB22675D979C">
+		<Properties>
+			<bool name="Enabled">true</bool>
+			<int name="MaxIndicatorsVisible">16</int>
+			<int name="MaxPromptsVisible">16</int>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+			<bool name="DefinesCapabilities">false</bool>
+			<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+			<string name="Name">ProximityPromptService</string>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+			<UniqueId name="UniqueId">5c921c5c5f6a3f1409369ed300000fe2</UniqueId>
+		</Properties>
+	</Item>
 	<SharedStrings>
 		<SharedString md5="yuZpQdnvvUBOTYh1jqZ2cA=="></SharedString>
 	</SharedStrings>
