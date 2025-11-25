@@ -2,19 +2,19 @@ import React, { useRef } from '@rbxts/react';
 
 const DEFAULT_CLOSE: string = "http://www.roblox.com/asset/?id=6031094678";
 const DEFAULT_SIZE: UDim2 = new UDim2(0.1,0,0.1,0);
-const DEFAULT_TINT_COLOR: Color3 = Color3.fromRGB(255,0,0);
+const DEFAULT_SHADE_COLOR: Color3 = Color3.fromRGB(215,0,0);
 
 interface CloseBtnProps {
 	btnContent?: string;
 	size?: UDim2;
-	tintColor?: Color3;
+	shadeColor?: Color3;
 	onClick: () => void;
 }
 
 export function CloseBtn(btnProps: CloseBtnProps) {
 	const btnContent = btnProps.btnContent ?? DEFAULT_CLOSE;
 	const btnSize = btnProps.size ?? DEFAULT_SIZE;
-	const tintColor = btnProps.tintColor ?? DEFAULT_TINT_COLOR;
+	const shadeColor = btnProps.shadeColor ?? DEFAULT_SHADE_COLOR;
 
 	const btnRef = useRef<ImageButton>();
 	return (
@@ -22,6 +22,7 @@ export function CloseBtn(btnProps: CloseBtnProps) {
 			key={"CloseBtn"}
 			ref={btnRef}
 			Image={btnContent}
+			ImageColor3={shadeColor}
 			ScaleType={Enum.ScaleType.Fit}
 			Size={btnSize}
 			AnchorPoint={new Vector2(1,0)}
@@ -40,6 +41,14 @@ export function CloseBtn(btnProps: CloseBtnProps) {
 						// Close the parent Instance of the close button
 						btnProps.onClick();
 					}
+				},
+				MouseEnter: () => {
+					if (!btnRef.current) return;
+
+					
+				},
+				MouseLeave: () => {
+
 				}
 			}}
 		>
