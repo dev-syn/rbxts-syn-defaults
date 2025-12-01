@@ -3,8 +3,11 @@ import { Signal } from '@rbxts/beacon';
 import { Players, RunService, UserInputService } from '@rbxts/services';
 
 interface BoundCheckOptions {
+	/** Should only the top-most element be considered? */
 	topMostOnly: boolean;
+	/** Should we ignore Roblox's default bar at the top of the screen during calculations. */
 	ignoreGuiInset: boolean;
+	/** Do we care if the element is visible or not? */
 	considerVisibility: boolean;
 }
 
@@ -46,7 +49,7 @@ const EmptyBoundsLayout = new BoundsLayout(
 const PlayerGui = Players.LocalPlayer?.FindFirstChildOfClass("PlayerGui");
 
 export function useBoundCheck(
-	instanceRef: React.RefObject<GuiObject | undefined>,
+	instRef: React.RefObject<GuiObject | undefined>,
 	options: BoundCheckOptions
 ) {
 	const { topMostOnly, ignoreGuiInset, considerVisibility } = options;
@@ -68,7 +71,7 @@ export function useBoundCheck(
 	const ancestorSGRef = useRef<ScreenGui>();
 
 	useEffect(() => {
-		const owner = instanceRef.current;
+		const owner = instRef.current;
 		if (owner && !ancestorSGRef.current) {
 			const ancestor = owner.FindFirstAncestorWhichIsA("ScreenGui");
 			if (!ancestor) {
@@ -77,10 +80,11 @@ export function useBoundCheck(
 			}
 			ancestorSGRef.current = ancestor;
 		}
-	}, [instanceRef.current]);
+	}, [instRef.current]);
 
 	const queryBounds = useCallback(() => {
-		const owner = instanceRef.current;
+		const owner = instRef.current;
+
 		const ancestorSG = ancestorSGRef.current;
 		if (!owner || !ancestorSG) return;
 
@@ -152,11 +156,11 @@ export function useBoundCheck(
 		ignoreGuiInset,
 		considerVisibility,
 		withinBounds,
-		instanceRef.current
+		instRef.current
 	]);
 
 	useEffect((() => {
-		const instanceID = instanceRef.current ? tostring(instanceRef.current) : "N/A";
+		const instanceID = instRef.current ? tostring(instRef.current) : "N/A";
 		const connectionID = `UIPresets_BoundCheck_${instanceID}`;
 
 		RunService.BindToRenderStep(
@@ -170,7 +174,7 @@ export function useBoundCheck(
 			boundEnterRef.current.Destroy();
 			boundExitRef.current.Destroy();
 		}
-	}),[queryBounds, instanceRef]);
+	}),[queryBounds, instRef]);
 
 	return {
 		withinBounds,
