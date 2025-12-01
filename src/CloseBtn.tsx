@@ -1,4 +1,4 @@
-import React, { forwardRef, Ref, useMemo, useRef } from '@rbxts/react';
+import React, { useMemo, useRef } from '@rbxts/react';
 import { TweenService } from '@rbxts/services';
 
 const DEFAULT_CLOSE: string = "http://www.roblox.com/asset/?id=6031094678";
@@ -11,20 +11,17 @@ interface CloseBtnProps {
 	size?: UDim2;
 	btnColor?: Color3;
 	bgColor?: Color3;
-	onClick: () => void;
+	onClose: () => void;
 }
 
-type CloseBtnInst = Frame & {
-	Shader: Frame;
-	CloseBtn: ImageButton;
-}
+export function CloseBtn(btnProps: CloseBtnProps) {
 
-const CloseBtn = forwardRef((btnProps: CloseBtnProps, ref: Ref<CloseBtnInst>) => {
 	const btnContent = btnProps.btnContent ?? DEFAULT_CLOSE;
 	const btnSize = btnProps.size ?? DEFAULT_SIZE;
 	const btnColor = btnProps.btnColor ?? DEFAULT_BTN_COLOR;
 	const bgColor = btnProps.bgColor ?? new Color3(1,1,1);
 
+	const containerRef = useRef<Frame>();
 	const shaderRef = useRef<Frame>();
 	const btnRef = useRef<ImageButton>();
 
@@ -42,6 +39,8 @@ const CloseBtn = forwardRef((btnProps: CloseBtnProps, ref: Ref<CloseBtnInst>) =>
 		// Container Frame
 		<frame
 			key={"CloseBtnContainer"}
+			ref={containerRef}
+
 			Size={btnSize}
 			BackgroundTransparency={1}
 			ClipsDescendants={true}
@@ -49,6 +48,7 @@ const CloseBtn = forwardRef((btnProps: CloseBtnProps, ref: Ref<CloseBtnInst>) =>
 		>
 			<uiaspectratioconstraint
 				key={"UIAspectRatioConstraint"}
+
 				AspectRatio={1}
 				AspectType={Enum.AspectType.FitWithinMaxSize}
 				DominantAxis={Enum.DominantAxis.Height}
@@ -57,6 +57,7 @@ const CloseBtn = forwardRef((btnProps: CloseBtnProps, ref: Ref<CloseBtnInst>) =>
 			<frame
 				key={"Shader"}
 				ref={shaderRef}
+
 				ZIndex={2}
 				Size={UDim2.fromScale(1,1)}
 				BackgroundColor3={shaderColor}
@@ -68,6 +69,7 @@ const CloseBtn = forwardRef((btnProps: CloseBtnProps, ref: Ref<CloseBtnInst>) =>
 			<imagebutton
 				key={"CloseBtn"}
 				ref={btnRef}
+
 				ZIndex={1}
 				Size={UDim2.fromScale(1,1)}
 				Image={btnContent}
@@ -75,7 +77,11 @@ const CloseBtn = forwardRef((btnProps: CloseBtnProps, ref: Ref<CloseBtnInst>) =>
 				ScaleType={Enum.ScaleType.Fit}
 				AutoButtonColor={false}
 				Event={{
-					MouseButton1Click: () => btnProps.onClick(),
+					MouseButton1Click: () => {
+						// Hide the CloseBtn
+						if (containerRef.current) containerRef.current.Visible = false;
+						btnProps.onClose();
+					},
 					MouseEnter: () => setShaderOpacity(0.85),
 					MouseLeave: () => setShaderOpacity(1),
 					MouseButton1Down: () => setShaderOpacity(0.7),
@@ -85,6 +91,4 @@ const CloseBtn = forwardRef((btnProps: CloseBtnProps, ref: Ref<CloseBtnInst>) =>
 			</imagebutton>
 		</frame>
 	);
-});
-
-export { CloseBtn, CloseBtnInst };
+};
