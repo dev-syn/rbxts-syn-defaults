@@ -2,6 +2,9 @@ import React, { useState } from '@rbxts/react';
 
 interface ToolTipProps {
 	position: UDim;
+	/** Whether this ToolTip contains a background image or is text based. */
+	imageContent?: string;
+	/** The ID  */
 	id?: string;
 }
 
