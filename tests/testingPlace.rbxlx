@@ -1039,352 +1039,6 @@ end)
 			<BinaryString name="Tags"></BinaryString>
 			<UniqueId name="UniqueId">107f3cf6ea35673b0933809f00000350</UniqueId>
 		</Properties>
-		<Item class="ScreenGui" referent="RBX7CE1229BA92C4F3BA0EED677552869A7">
-			<Properties>
-				<bool name="ClipToDeviceSafeArea">true</bool>
-				<int name="DisplayOrder">0</int>
-				<token name="SafeAreaCompatibility">1</token>
-				<token name="ScreenInsets">2</token>
-				<bool name="Enabled">true</bool>
-				<bool name="ResetOnSpawn">true</bool>
-				<token name="ZIndexBehavior">1</token>
-				<bool name="AutoLocalize">true</bool>
-				<Ref name="RootLocalizationTable">null</Ref>
-				<token name="SelectionBehaviorDown">0</token>
-				<token name="SelectionBehaviorLeft">0</token>
-				<token name="SelectionBehaviorRight">0</token>
-				<token name="SelectionBehaviorUp">0</token>
-				<bool name="SelectionGroup">false</bool>
-				<BinaryString name="AttributesSerialize"></BinaryString>
-				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-				<bool name="DefinesCapabilities">false</bool>
-				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-				<string name="Name">ScreenGui</string>
-				<int64 name="SourceAssetId">-1</int64>
-				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">21573a10a22a7b1a09346ab100002cb3</UniqueId>
-			</Properties>
-			<Item class="Frame" referent="RBX6D856B21308F465D9FE6521DC89CBC20">
-				<Properties>
-					<token name="Style">0</token>
-					<bool name="Active">false</bool>
-					<Vector2 name="AnchorPoint">
-						<X>0.5</X>
-						<Y>0.5</Y>
-					</Vector2>
-					<token name="AutomaticSize">0</token>
-					<Color3 name="BackgroundColor3">
-						<R>0.203921571</R>
-						<G>0.203921571</G>
-						<B>0.203921571</B>
-					</Color3>
-					<float name="BackgroundTransparency">0</float>
-					<Color3 name="BorderColor3">
-						<R>0</R>
-						<G>0</G>
-						<B>0</B>
-					</Color3>
-					<token name="BorderMode">0</token>
-					<int name="BorderSizePixel">0</int>
-					<bool name="ClipsDescendants">false</bool>
-					<bool name="Draggable">false</bool>
-					<bool name="Interactable">true</bool>
-					<int name="LayoutOrder">0</int>
-					<Ref name="NextSelectionDown">null</Ref>
-					<Ref name="NextSelectionLeft">null</Ref>
-					<Ref name="NextSelectionRight">null</Ref>
-					<Ref name="NextSelectionUp">null</Ref>
-					<UDim2 name="Position">
-						<XS>0.5</XS>
-						<XO>0</XO>
-						<YS>0.5</YS>
-						<YO>0</YO>
-					</UDim2>
-					<float name="Rotation">0</float>
-					<bool name="Selectable">false</bool>
-					<Ref name="SelectionImageObject">null</Ref>
-					<int name="SelectionOrder">0</int>
-					<UDim2 name="Size">
-						<XS>0.400000006</XS>
-						<XO>0</XO>
-						<YS>0.699999988</YS>
-						<YO>0</YO>
-					</UDim2>
-					<token name="SizeConstraint">0</token>
-					<bool name="Visible">true</bool>
-					<int name="ZIndex">1</int>
-					<bool name="AutoLocalize">true</bool>
-					<Ref name="RootLocalizationTable">null</Ref>
-					<token name="SelectionBehaviorDown">0</token>
-					<token name="SelectionBehaviorLeft">0</token>
-					<token name="SelectionBehaviorRight">0</token>
-					<token name="SelectionBehaviorUp">0</token>
-					<bool name="SelectionGroup">false</bool>
-					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-					<bool name="DefinesCapabilities">false</bool>
-					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-					<string name="Name">Frame</string>
-					<int64 name="SourceAssetId">-1</int64>
-					<BinaryString name="Tags"></BinaryString>
-					<UniqueId name="UniqueId">21573a10a22a7b1a09346ab100002eb6</UniqueId>
-				</Properties>
-				<Item class="Frame" referent="RBX255524CCA018417A95B865398D9F18CF">
-					<Properties>
-						<token name="Style">0</token>
-						<bool name="Active">false</bool>
-						<Vector2 name="AnchorPoint">
-							<X>1</X>
-							<Y>0</Y>
-						</Vector2>
-						<token name="AutomaticSize">0</token>
-						<Color3 name="BackgroundColor3">
-							<R>1</R>
-							<G>1</G>
-							<B>1</B>
-						</Color3>
-						<float name="BackgroundTransparency">1</float>
-						<Color3 name="BorderColor3">
-							<R>0</R>
-							<G>0</G>
-							<B>0</B>
-						</Color3>
-						<token name="BorderMode">0</token>
-						<int name="BorderSizePixel">0</int>
-						<bool name="ClipsDescendants">false</bool>
-						<bool name="Draggable">false</bool>
-						<bool name="Interactable">true</bool>
-						<int name="LayoutOrder">0</int>
-						<Ref name="NextSelectionDown">null</Ref>
-						<Ref name="NextSelectionLeft">null</Ref>
-						<Ref name="NextSelectionRight">null</Ref>
-						<Ref name="NextSelectionUp">null</Ref>
-						<UDim2 name="Position">
-							<XS>1</XS>
-							<XO>0</XO>
-							<YS>0</YS>
-							<YO>0</YO>
-						</UDim2>
-						<float name="Rotation">0</float>
-						<bool name="Selectable">false</bool>
-						<Ref name="SelectionImageObject">null</Ref>
-						<int name="SelectionOrder">0</int>
-						<UDim2 name="Size">
-							<XS>0.25</XS>
-							<XO>0</XO>
-							<YS>0.25</YS>
-							<YO>0</YO>
-						</UDim2>
-						<token name="SizeConstraint">0</token>
-						<bool name="Visible">true</bool>
-						<int name="ZIndex">1</int>
-						<bool name="AutoLocalize">true</bool>
-						<Ref name="RootLocalizationTable">null</Ref>
-						<token name="SelectionBehaviorDown">0</token>
-						<token name="SelectionBehaviorLeft">0</token>
-						<token name="SelectionBehaviorRight">0</token>
-						<token name="SelectionBehaviorUp">0</token>
-						<bool name="SelectionGroup">false</bool>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
-						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-						<string name="Name">CloseBtnContainer</string>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-						<UniqueId name="UniqueId">21573a10a22a7b1a09346ab100002c90</UniqueId>
-					</Properties>
-					<Item class="ImageButton" referent="RBXD62949B725F040F98AE00316AB07360F">
-						<Properties>
-							<Content name="HoverImage"><null></null></Content>
-							<Content name="Image"><url>rbxassetid://6031094678</url></Content>
-							<Color3 name="ImageColor3">
-								<R>0.843137264</R>
-								<G>0</G>
-								<B>0</B>
-							</Color3>
-							<Vector2 name="ImageRectOffset">
-								<X>0</X>
-								<Y>0</Y>
-							</Vector2>
-							<Vector2 name="ImageRectSize">
-								<X>0</X>
-								<Y>0</Y>
-							</Vector2>
-							<float name="ImageTransparency">0</float>
-							<Content name="PressedImage"><null></null></Content>
-							<token name="ResampleMode">0</token>
-							<token name="ScaleType">0</token>
-							<Rect2D name="SliceCenter">
-								<min>
-									<X>0</X>
-									<Y>0</Y>
-								</min>
-								<max>
-									<X>0</X>
-									<Y>0</Y>
-								</max>
-							</Rect2D>
-							<float name="SliceScale">1</float>
-							<UDim2 name="TileSize">
-								<XS>1</XS>
-								<XO>0</XO>
-								<YS>1</YS>
-								<YO>0</YO>
-							</UDim2>
-							<bool name="AutoButtonColor">true</bool>
-							<Ref name="HoverHapticEffect">null</Ref>
-							<bool name="Modal">false</bool>
-							<Ref name="PressHapticEffect">null</Ref>
-							<bool name="Selected">false</bool>
-							<token name="Style">0</token>
-							<bool name="Active">true</bool>
-							<Vector2 name="AnchorPoint">
-								<X>0</X>
-								<Y>0</Y>
-							</Vector2>
-							<token name="AutomaticSize">0</token>
-							<Color3 name="BackgroundColor3">
-								<R>1</R>
-								<G>1</G>
-								<B>1</B>
-							</Color3>
-							<float name="BackgroundTransparency">1</float>
-							<Color3 name="BorderColor3">
-								<R>0</R>
-								<G>0</G>
-								<B>0</B>
-							</Color3>
-							<token name="BorderMode">0</token>
-							<int name="BorderSizePixel">0</int>
-							<bool name="ClipsDescendants">false</bool>
-							<bool name="Draggable">false</bool>
-							<bool name="Interactable">true</bool>
-							<int name="LayoutOrder">0</int>
-							<Ref name="NextSelectionDown">null</Ref>
-							<Ref name="NextSelectionLeft">null</Ref>
-							<Ref name="NextSelectionRight">null</Ref>
-							<Ref name="NextSelectionUp">null</Ref>
-							<UDim2 name="Position">
-								<XS>0</XS>
-								<XO>0</XO>
-								<YS>0</YS>
-								<YO>0</YO>
-							</UDim2>
-							<float name="Rotation">0</float>
-							<bool name="Selectable">true</bool>
-							<Ref name="SelectionImageObject">null</Ref>
-							<int name="SelectionOrder">0</int>
-							<UDim2 name="Size">
-								<XS>1</XS>
-								<XO>0</XO>
-								<YS>1</YS>
-								<YO>0</YO>
-							</UDim2>
-							<token name="SizeConstraint">0</token>
-							<bool name="Visible">true</bool>
-							<int name="ZIndex">2</int>
-							<bool name="AutoLocalize">true</bool>
-							<Ref name="RootLocalizationTable">null</Ref>
-							<token name="SelectionBehaviorDown">0</token>
-							<token name="SelectionBehaviorLeft">0</token>
-							<token name="SelectionBehaviorRight">0</token>
-							<token name="SelectionBehaviorUp">0</token>
-							<bool name="SelectionGroup">false</bool>
-							<BinaryString name="AttributesSerialize"></BinaryString>
-							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-							<bool name="DefinesCapabilities">false</bool>
-							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-							<string name="Name">ImageButton</string>
-							<int64 name="SourceAssetId">-1</int64>
-							<BinaryString name="Tags"></BinaryString>
-							<UniqueId name="UniqueId">21573a10a22a7b1a09346ab100002cb2</UniqueId>
-						</Properties>
-					</Item>
-					<Item class="UIAspectRatioConstraint" referent="RBX6AA4AEDC5A584EA3A97B5F69B7C50F33">
-						<Properties>
-							<float name="AspectRatio">1</float>
-							<token name="AspectType">0</token>
-							<token name="DominantAxis">1</token>
-							<BinaryString name="AttributesSerialize"></BinaryString>
-							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-							<bool name="DefinesCapabilities">false</bool>
-							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-							<string name="Name">UIAspectRatioConstraint</string>
-							<int64 name="SourceAssetId">-1</int64>
-							<BinaryString name="Tags"></BinaryString>
-							<UniqueId name="UniqueId">21573a10a22a7b1a09346ab100002cb1</UniqueId>
-						</Properties>
-					</Item>
-					<Item class="Frame" referent="RBX982A44DF9A014793B06DFEE8E6FAA45F">
-						<Properties>
-							<token name="Style">0</token>
-							<bool name="Active">false</bool>
-							<Vector2 name="AnchorPoint">
-								<X>0</X>
-								<Y>0</Y>
-							</Vector2>
-							<token name="AutomaticSize">0</token>
-							<Color3 name="BackgroundColor3">
-								<R>0.203921571</R>
-								<G>0.203921571</G>
-								<B>0.203921571</B>
-							</Color3>
-							<float name="BackgroundTransparency">0</float>
-							<Color3 name="BorderColor3">
-								<R>0</R>
-								<G>0</G>
-								<B>0</B>
-							</Color3>
-							<token name="BorderMode">0</token>
-							<int name="BorderSizePixel">0</int>
-							<bool name="ClipsDescendants">false</bool>
-							<bool name="Draggable">false</bool>
-							<bool name="Interactable">true</bool>
-							<int name="LayoutOrder">0</int>
-							<Ref name="NextSelectionDown">null</Ref>
-							<Ref name="NextSelectionLeft">null</Ref>
-							<Ref name="NextSelectionRight">null</Ref>
-							<Ref name="NextSelectionUp">null</Ref>
-							<UDim2 name="Position">
-								<XS>0</XS>
-								<XO>0</XO>
-								<YS>0</YS>
-								<YO>0</YO>
-							</UDim2>
-							<float name="Rotation">0</float>
-							<bool name="Selectable">false</bool>
-							<Ref name="SelectionImageObject">null</Ref>
-							<int name="SelectionOrder">0</int>
-							<UDim2 name="Size">
-								<XS>1</XS>
-								<XO>0</XO>
-								<YS>1</YS>
-								<YO>0</YO>
-							</UDim2>
-							<token name="SizeConstraint">0</token>
-							<bool name="Visible">true</bool>
-							<int name="ZIndex">1</int>
-							<bool name="AutoLocalize">true</bool>
-							<Ref name="RootLocalizationTable">null</Ref>
-							<token name="SelectionBehaviorDown">0</token>
-							<token name="SelectionBehaviorLeft">0</token>
-							<token name="SelectionBehaviorRight">0</token>
-							<token name="SelectionBehaviorUp">0</token>
-							<bool name="SelectionGroup">false</bool>
-							<BinaryString name="AttributesSerialize"></BinaryString>
-							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-							<bool name="DefinesCapabilities">false</bool>
-							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-							<string name="Name">Shader</string>
-							<int64 name="SourceAssetId">-1</int64>
-							<BinaryString name="Tags"></BinaryString>
-							<UniqueId name="UniqueId">21573a10a22a7b1a09346ab100002db4</UniqueId>
-						</Properties>
-					</Item>
-				</Item>
-			</Item>
-		</Item>
 	</Item>
 	<Item class="LocalizationService" referent="RBX1E0543518DB14D129437C550CC817FEA">
 		<Properties>
@@ -73610,10 +73264,13 @@ return exports
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
 local React = _react
+local useMemo = _react.useMemo
 local useRef = _react.useRef
+local TweenService = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").TweenService
 local DEFAULT_CLOSE = "http://www.roblox.com/asset/?id=6031094678"
 local DEFAULT_SIZE = UDim2.new(0.1, 0, 0.1, 0)
-local DEFAULT_SHADE_COLOR = Color3.fromRGB(215, 0, 0)
+local DEFAULT_BTN_COLOR = Color3.fromRGB(215, 0, 0)
+local TWEEN_INFO = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 local function CloseBtn(btnProps)
 	local _condition = btnProps.btnContent
 	if _condition == nil then
@@ -73621,41 +73278,74 @@ local function CloseBtn(btnProps)
 	end
 	local btnContent = _condition
 	local btnSize = btnProps.size or DEFAULT_SIZE
-	local shadeColor = btnProps.shadeColor or DEFAULT_SHADE_COLOR
+	local btnColor = btnProps.btnColor or DEFAULT_BTN_COLOR
+	local bgColor = btnProps.bgColor or Color3.new(1, 1, 1)
+	local containerRef = useRef()
+	local shaderRef = useRef()
 	local btnRef = useRef()
-	return React.createElement("imagebutton", {
+	-- Calculate contrast
+	local shaderColor = useMemo(function()
+		local lum = bgColor.R * 0.299 + bgColor.G * 0.587 + bgColor.B * 0.114
+		return if lum > 0.5 then Color3.new(0, 0, 0) else Color3.new(1, 1, 1)
+	end, { bgColor })
+	local setShaderOpacity = function(transparency)
+		if shaderRef.current then
+			TweenService:Create(shaderRef.current, TWEEN_INFO, {
+				BackgroundTransparency = transparency,
+			}):Play()
+		end
+	end
+	return React.createElement("frame", {
+		key = "CloseBtnContainer",
+		ref = containerRef,
+		Size = btnSize,
+		BackgroundTransparency = 1,
+		ClipsDescendants = true,
+		BorderSizePixel = 0,
+	}, React.createElement("uiaspectratioconstraint", {
+		key = "UIAspectRatioConstraint",
+		AspectRatio = 1,
+		AspectType = Enum.AspectType.FitWithinMaxSize,
+		DominantAxis = Enum.DominantAxis.Height,
+	}), React.createElement("frame", {
+		key = "Shader",
+		ref = shaderRef,
+		ZIndex = 2,
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = shaderColor,
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Active = false,
+	}), React.createElement("imagebutton", {
 		key = "CloseBtn",
 		ref = btnRef,
+		ZIndex = 1,
+		Size = UDim2.fromScale(1, 1),
 		Image = btnContent,
-		ImageColor3 = shadeColor,
+		ImageColor3 = btnColor,
 		ScaleType = Enum.ScaleType.Fit,
-		Size = btnSize,
-		AnchorPoint = Vector2.new(1, 0),
-		Position = UDim2.new(1, 0, 0, 0),
-		BackgroundTransparency = 1,
 		AutoButtonColor = false,
 		Event = {
 			MouseButton1Click = function()
-				if btnRef.current then
-					local parentInst = btnRef.current.Parent
-					if parentInst and parentInst:IsA("GuiObject") then
-						parentInst.Visible = false
-					end
-					-- Close the parent Instance of the close button
-					btnProps.onClick()
+				-- Hide the CloseBtn
+				if containerRef.current then
+					containerRef.current.Visible = false
 				end
+				btnProps.onClose()
 			end,
 			MouseEnter = function()
-				if not btnRef.current then
-					return nil
-				end
+				return setShaderOpacity(0.85)
 			end,
-			MouseLeave = function() end,
+			MouseLeave = function()
+				return setShaderOpacity(1)
+			end,
+			MouseButton1Down = function()
+				return setShaderOpacity(0.7)
+			end,
+			MouseButton1Up = function()
+				return setShaderOpacity(0.85)
+			end,
 		},
-	}, React.createElement("uiaspectratioconstraint", {
-		AspectType = Enum.AspectType.FitWithinMaxSize,
-		DominantAxis = Enum.DominantAxis.Height,
-		AspectRatio = 1,
 	}))
 end
 return {
@@ -74019,9 +73709,7 @@ local App = function()
 	}, React.createElement("uigridlayout", {
 		CellSize = UDim2.new(0, 200, 0, 200),
 	}), React.createElement(CloseBtn, {
-		onClick = function()
-			return print("Close button was pressed!")
-		end,
+		onClose = function() end,
 	})))
 end
 return {
@@ -74037,6 +73725,49 @@ return {
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
 					<UniqueId name="UniqueId">626e6fa6ec504027093382c300002c76</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="Folder" referent="RBXE146A933D49B407AA19182CADA10F44D">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">components</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">0ace97b0e0c49523093e9ec400003645</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBXB337E1E1C7484278B78AB34D90A9F893">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local React = _react
+local useState = _react.useState
+local function ToolTip(props)
+	local id = if props.id ~= nil then `-{props.id}` else ""
+	local text, setText = useState("")
+	return React.createElement("textlabel", {
+		key = "ToolTip" .. id,
+		Text = text,
+	})
+end
+return {
+	ToolTip = ToolTip,
+}
+]]></ProtectedString>
+					<string name="ScriptGuid">{513C938E-B99E-4020-B9C2-286D28D0E56D}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">ToolTip</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">0ace97b0e0c49523093e9ec400003a29</UniqueId>
 				</Properties>
 			</Item>
 		</Item>
