@@ -1,7 +1,8 @@
-import React from '@rbxts/react';
+import React, { useRef } from '@rbxts/react';
 import { CloseBtn } from './CloseBtn';
 
 export const App = () => {
+	
 	return (
 		<screengui ResetOnSpawn={false} DisplayOrder={10}>
 			<scrollingframe
@@ -12,7 +13,9 @@ export const App = () => {
 			>
 				<uigridlayout CellSize={new UDim2(0,200,0,200)}/>
 				
-				<CloseBtn onClick={() => print("Close button was pressed!")} />
+				<CloseBtn
+					onClose={() => {}}
+				/>
 
 			</scrollingframe>
 		</screengui>
