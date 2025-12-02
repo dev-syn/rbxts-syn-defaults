@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from '@rbxts/react'
 
 type SelectionData = string;
 
-interface SelectableGroupConfig {
+export interface SelectableGroupConfig {
 	/** Whether only a single selection can be made or multiple. */
 	isSingleOnly: boolean;
 	/** Whether a selection is required or no selection can be present. */
