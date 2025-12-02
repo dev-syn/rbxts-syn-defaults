@@ -20,6 +20,7 @@
 			"syn-defaults": {
 				"$path": "../out/src",
 
+				"components": { "$path": "../out/tests/components" },
 				"App": { "$path": "../out/tests/App.luau" }
 			}
 		},
