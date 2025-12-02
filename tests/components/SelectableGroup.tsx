@@ -1,24 +1,45 @@
-import React from '@rbxts/react';
-import { useSelectableGroup } from '../../src/hooks/useSelectableGroup';
+import React, { PropsWithChildren, useMemo } from '@rbxts/react';
+import { SelectableGroupConfig, useSelectableGroup } from '../../src/hooks/useSelectableGroup';
 import { SelectableItem } from './SelectableItem';
+import { SelectableGroupContext } from '../context/SelectableGroupContext';
 
-interface SelectableGroupProps {
-
+interface SelectableGroupProps extends PropsWithChildren {
+	config: SelectableGroupConfig;
+	onSelectionChanged?: (prev: string[] | undefined,current: string[] | undefined) => void;
 }
 
-export function SelectableGroup(props: SelectableGroupProps) {
+export function SelectableGroup({ config, onSelectionChanged, children }: SelectableGroupProps) {
+
+	const { isSingleOnly, requireSelection } = config;
 
 	const {
-		currentSelection, selectItem,
-		isSelected, SelectionChanged
-	} = useSelectableGroup({ isSingleOnly: true, requireSelection: false });
+		selectItem,
+		isSelected,
+		SelectionChanged
+	} = useSelectableGroup({ isSingleOnly, requireSelection });
+
+	const contextValue = useMemo(() => ({
+		selectItem,
+		isSelected
+	}),[selectItem,isSelected]);
 
 	return (
-		<scrollingframe
-		BackgroundColor3={Color3.fromRGB(105,105,105)}
+		<SelectableGroupContext.Provider
+			value={contextValue}
 		>
-			<uilistlayout/>
-			<SelectableItem/>
-		</scrollingframe>
+			<scrollingframe
+				Size={UDim2.fromScale(1,1)}
+				BackgroundColor3={Color3.fromRGB(105,105,105)}
+				CanvasSize={UDim2.fromScale(0,0)}
+				AutomaticCanvasSize={Enum.AutomaticSize.Y}
+			>
+				<uilistlayout
+					FillDirection={Enum.FillDirection.Vertical}
+          SortOrder={Enum.SortOrder.LayoutOrder}
+          Padding={new UDim(0, 5)}
+				/>
+				{children}
+			</scrollingframe>
+		</SelectableGroupContext.Provider>
 	);
 }
