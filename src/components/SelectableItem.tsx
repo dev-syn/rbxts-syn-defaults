@@ -12,7 +12,7 @@ export function SelectableItem(props: SelectableItemProps) {
 			BackgroundColor3={Color3.fromRGB(60,60,60)}
 			TextXAlignment={Enum.TextXAlignment.Center}
 			Event={{
-				MouseButton1Click: () => selectItem()
+				MouseButton1Click: () => selectItem(props.id)
 			}}
 		/>
 	);
