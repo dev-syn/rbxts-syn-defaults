@@ -101,9 +101,9 @@
 		<Item class="Camera" referent="RBX02364EDF6E0A48FB973E61E82B939949">
 			<Properties>
 				<CoordinateFrame name="CFrame">
-					<X>-14.8914642</X>
-					<Y>73.9248734</Y>
-					<Z>67.8756714</Z>
+					<X>-37.318428</X>
+					<Y>91.4032364</Y>
+					<Z>77.443222</Z>
 					<R00>0.995004356</R00>
 					<R01>0.083485283</R01>
 					<R02>-0.0547444597</R02>
@@ -119,9 +119,9 @@
 				<float name="FieldOfView">70</float>
 				<token name="FieldOfViewMode">0</token>
 				<CoordinateFrame name="Focus">
-					<X>-7.07784796</X>
-					<Y>85.0108719</Y>
-					<Z>68.4777374</Z>
+					<X>-25.9954567</X>
+					<Y>80.9915619</Y>
+					<Z>71.5682068</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -73738,6 +73738,56 @@ return {
 					<BinaryString name="Tags"></BinaryString>
 					<UniqueId name="UniqueId">0ace97b0e0c49523093e9ec400003645</UniqueId>
 				</Properties>
+				<Item class="ModuleScript" referent="RBXBB3763185F2841E381CBFB8CFF0E7C55">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local useSelectableGroup = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useSelectableGroup").useSelectableGroup
+local function SelectableGroup(props)
+	local _binding = useSelectableGroup({
+		isSingleOnly = true,
+		requireSelection = false,
+	})
+	local currentSelection = _binding.currentSelection
+	local selectItem = _binding.selectItem
+	local isSelected = _binding.isSelected
+	local SelectionChanged = _binding.SelectionChanged
+	return React.createElement("scrollingframe", {
+		BackgroundColor3 = Color3.fromRGB(105, 105, 105),
+	}, React.createElement("uilistlayout"), React.createElement("textbutton", {
+		LayoutOrder = 1,
+		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Text = "A button.",
+	}), React.createElement("textbutton", {
+		LayoutOrder = 2,
+		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Text = "B button.",
+	}), React.createElement("textbutton", {
+		LayoutOrder = 3,
+		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
+		TextXAlignment = Enum.TextXAlignment.Center,
+		Text = "C button.",
+	}))
+end
+return {
+	SelectableGroup = SelectableGroup,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{D387E543-7BCE-45BC-91FE-86D94BDAD406}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">SelectableGroup</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">1e3a1ce825d0e5a9093feb1e000029ec</UniqueId>
+					</Properties>
+				</Item>
 			</Item>
 			<Item class="ModuleScript" referent="RBXB337E1E1C7484278B78AB34D90A9F893">
 				<Properties>
@@ -73769,42 +73819,6 @@ return {
 					<BinaryString name="Tags"></BinaryString>
 					<UniqueId name="UniqueId">0ace97b0e0c49523093e9ec400003a29</UniqueId>
 				</Properties>
-			</Item>
-			<Item class="Folder" referent="RBX4AF0F1BD2CD84A9B804953F52C7D341F">
-				<Properties>
-					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-					<bool name="DefinesCapabilities">false</bool>
-					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-					<string name="Name">components</string>
-					<int64 name="SourceAssetId">-1</int64>
-					<BinaryString name="Tags"></BinaryString>
-					<UniqueId name="UniqueId">1989f132f88d4c0e093fa4ef000028fa</UniqueId>
-				</Properties>
-				<Item class="ModuleScript" referent="RBX91772E2AA81148BABE068B2F170BF321">
-					<Properties>
-						<Content name="LinkedSource"><null></null></Content>
-						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
-local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
-local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
-local function SelectableGroup(props)
-	return React.createElement("scrollingframe", nil, React.createElement("uilistlayout"), React.createElement("textbutton"))
-end
-return {
-	SelectableGroup = SelectableGroup,
-}
-]]></ProtectedString>
-						<string name="ScriptGuid">{1FD68219-26D6-4AA2-8204-47D02CD4AD1B}</string>
-						<BinaryString name="AttributesSerialize"></BinaryString>
-						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-						<bool name="DefinesCapabilities">false</bool>
-						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-						<string name="Name">SelectableGroup</string>
-						<int64 name="SourceAssetId">-1</int64>
-						<BinaryString name="Tags"></BinaryString>
-						<UniqueId name="UniqueId">1989f132f88d4c0e093fa4ef000028fb</UniqueId>
-					</Properties>
-				</Item>
 			</Item>
 		</Item>
 	</Item>
