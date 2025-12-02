@@ -101,9 +101,9 @@
 		<Item class="Camera" referent="RBX02364EDF6E0A48FB973E61E82B939949">
 			<Properties>
 				<CoordinateFrame name="CFrame">
-					<X>-7.18733692</X>
-					<Y>86.6833649</Y>
-					<Z>69.5689774</Z>
+					<X>-14.8914642</X>
+					<Y>73.9248734</Y>
+					<Z>67.8756714</Z>
 					<R00>0.995004356</R00>
 					<R01>0.083485283</R01>
 					<R02>-0.0547444597</R02>
@@ -119,9 +119,9 @@
 				<float name="FieldOfView">70</float>
 				<token name="FieldOfViewMode">0</token>
 				<CoordinateFrame name="Focus">
-					<X>-7.15971136</X>
-					<Y>86.3181992</Y>
-					<Z>69.3491211</Z>
+					<X>-7.07784796</X>
+					<Y>85.0108719</Y>
+					<Z>68.4777374</Z>
 					<R00>1</R00>
 					<R01>0</R01>
 					<R02>0</R02>
@@ -73431,7 +73431,7 @@ if _PlayerGui ~= nil then
 	_PlayerGui = _PlayerGui:FindFirstChildOfClass("PlayerGui")
 end
 local PlayerGui = _PlayerGui
-local function useBoundCheck(instanceRef, options)
+local function useBoundCheck(instRef, options)
 	local _binding = options
 	local topMostOnly = _binding.topMostOnly
 	local ignoreGuiInset = _binding.ignoreGuiInset
@@ -73452,7 +73452,7 @@ local function useBoundCheck(instanceRef, options)
 	-- Memoize lookup of the ancestor ScreenGui
 	local ancestorSGRef = useRef()
 	useEffect(function()
-		local owner = instanceRef.current
+		local owner = instRef.current
 		if owner and not ancestorSGRef.current then
 			local ancestor = owner:FindFirstAncestorWhichIsA("ScreenGui")
 			if not ancestor then
@@ -73461,9 +73461,9 @@ local function useBoundCheck(instanceRef, options)
 			end
 			ancestorSGRef.current = ancestor
 		end
-	end, { instanceRef.current })
+	end, { instRef.current })
 	local queryBounds = useCallback(function()
-		local owner = instanceRef.current
+		local owner = instRef.current
 		local ancestorSG = ancestorSGRef.current
 		if not owner or not ancestorSG then
 			return nil
@@ -73526,9 +73526,9 @@ local function useBoundCheck(instanceRef, options)
 			setWithinBounds(false)
 			boundExitRef.current:Fire()
 		end
-	end, { topMostOnly, ignoreGuiInset, considerVisibility, withinBounds, instanceRef.current })
+	end, { topMostOnly, ignoreGuiInset, considerVisibility, withinBounds, instRef.current })
 	useEffect((function()
-		local instanceID = if instanceRef.current then tostring(instanceRef.current) else "N/A"
+		local instanceID = if instRef.current then tostring(instRef.current) else "N/A"
 		local connectionID = `UIPresets_BoundCheck_{instanceID}`
 		RunService:BindToRenderStep(connectionID, Enum.RenderPriority.Input.Value + 5, queryBounds)
 		return function()
@@ -73536,7 +73536,7 @@ local function useBoundCheck(instanceRef, options)
 			boundEnterRef.current:Destroy()
 			boundExitRef.current:Destroy()
 		end
-	end), { queryBounds, instanceRef })
+	end), { queryBounds, instRef })
 	return {
 		withinBounds = withinBounds,
 		bounds = bounds,
@@ -73769,6 +73769,42 @@ return {
 					<BinaryString name="Tags"></BinaryString>
 					<UniqueId name="UniqueId">0ace97b0e0c49523093e9ec400003a29</UniqueId>
 				</Properties>
+			</Item>
+			<Item class="Folder" referent="RBX4AF0F1BD2CD84A9B804953F52C7D341F">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">components</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">1989f132f88d4c0e093fa4ef000028fa</UniqueId>
+				</Properties>
+				<Item class="ModuleScript" referent="RBX91772E2AA81148BABE068B2F170BF321">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local function SelectableGroup(props)
+	return React.createElement("scrollingframe", nil, React.createElement("uilistlayout"), React.createElement("textbutton"))
+end
+return {
+	SelectableGroup = SelectableGroup,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{1FD68219-26D6-4AA2-8204-47D02CD4AD1B}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">SelectableGroup</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">1989f132f88d4c0e093fa4ef000028fb</UniqueId>
+					</Properties>
+				</Item>
 			</Item>
 		</Item>
 	</Item>
