@@ -24,12 +24,10 @@ export function useSelectableGroup(config: SelectableGroupConfig): SelectableGro
 
 	const [currentSelection, setCurrentSelection] = useState<SelectionData[]>([]);
 
+	const prevSelectionRef = useRef<SelectionData[]>([]);
+
 	const selChangedRef = useRef(new Signal<[SelectionData[] | undefined, SelectionData[] | undefined]>());
   const SelectionChanged = useMemo(() => selChangedRef.current,[]);
-
-	const isSelected = useCallback((id: SelectionData) => {
-		return currentSelection.includes(id);
-	},[currentSelection]);
 
 	const selectItem = useCallback((id: SelectionData) => {
 		setCurrentSelection(prevSel => {
@@ -40,35 +38,42 @@ export function useSelectableGroup(config: SelectableGroupConfig): SelectableGro
 
 			if (isSingleOnly) {
 				if (isAlreadySel) {
-					// Deselecting: Check if required. I broke DRY, sue me
+					// If required and it's the last, do nothing
 					if (requireSelection && prevSel.size() === 1) return prevSel;
-					newSel = [];
-				} else newSel = [id];
-			} else { // Multi-selection is enabled guys?
+					return [];
+				} else { return [id]; }
+			} else {
 				if (isAlreadySel) {
-					// Deselecting: Check if required. I broke DRY, sue me
+					// If required and it's the last, do nothing
 					if (requireSelection && prevSel.size() === 1) return prevSel;
-					newSel = prevSel.filter(item => item !== id);
-				} else newSel = [...prevSel,id];
+					return prevSel.filter(item => item !== id);
+				} else { return [...prevSel,id]; }
 			}
-
-			// If any changes are noticed from the old to the new selections then we will notify the signal responders.
-			if (
-				prevSel.size() !== newSel.size() ||
-				prevSel.some((val,i) => val !== newSel[i])) {
-					SelectionChanged.Fire(prevSnap,newSel);
-					return newSel;
-			} 
-
-			return prevSel;
 		})
-	},[isSingleOnly,requireSelection,SelectionChanged]);
+	},[isSingleOnly,requireSelection]);
+
+	useEffect(() => {
+		const prev = prevSelectionRef.current;
+		const current = currentSelection;
+
+		// Prevent firing initial mount
+		if (prev === current) return;
+
+		const hasChanged: boolean = prev.size() !== current.size() || prev.some((val,i) => val !== current[i]);
+		if (hasChanged) {
+			selChangedRef.current.Fire(prev,current);
+			// Update ref to the new current
+			prevSelectionRef.current = current;
+		}
+	},[currentSelection]);
+
+	const isSelected = useCallback((id: SelectionData) => {
+		return currentSelection.includes(id);
+	},[currentSelection]);
 
 	// Clean up SelectionChanged signal ref
 	useEffect(() => {
-		return () => {
-			selChangedRef.current.Destroy();
-		}
+		return () => selChangedRef.current.Destroy();
 	},[]);
 
 	return {
