@@ -1,11 +1,14 @@
-import React from '@rbxts/react';
+import React, { useContext } from '@rbxts/react';
 import { PropsWithChildren } from '@rbxts/react';
+import { SelectableGroupContext } from '../context/SelectableGroupContext';
 
 interface SelectableItemProps extends PropsWithChildren {
 	id: string;
 }
 
 export function SelectableItem(props: SelectableItemProps) {
+	const { selectItem, isSelected } = useContext(SelectableGroupContext);
+
 	return (
 		<textbutton
 			LayoutOrder={1}
