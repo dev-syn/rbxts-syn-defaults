@@ -15,6 +15,10 @@ export const App = () => {
 			>
 				<uigridlayout
 				CellSize={new UDim2(0,200,0,200)}
+				FillDirection={Enum.FillDirection.Horizontal}
+				CellPadding={UDim2.fromScale(0.025,0.05)}
+				FillDirectionMaxCells={4}
+				
 				/>
 				
 				<CloseBtn
