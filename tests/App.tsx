@@ -2,6 +2,7 @@ import React, { useRef } from '@rbxts/react';
 import { CloseBtn } from './CloseBtn';
 import { SelectableGroup } from './SelectableGroup';
 import { SelectableItem } from './components/SelectableItem';
+import Object from '@rbxts/object-utils';
 
 export const App = () => {
 	
@@ -29,13 +30,25 @@ export const App = () => {
 					config={{requireSelection: true,isSingleOnly: true}}
 				>
 				<SelectableItem
-					id="button_A"
+					id={"btn_A"}
+					btnType='TextButton'
+
+					Text={"Button A"}
+					Size={UDim2.fromOffset(50,50)}
 				/>
 				<SelectableItem
-					id="button_B"
+					id={"btn_B"}
+					btnType='TextButton'
+
+					Text={"Button B"}
+					Size={UDim2.fromOffset(50,50)}
 				/>
 				<SelectableItem
-					id="button_C"
+					id={"btn_C"}
+					btnType='TextButton'
+
+					Text={"Button C"}
+					Size={UDim2.fromOffset(50,50)}
 				/>
 				</SelectableGroup>
 

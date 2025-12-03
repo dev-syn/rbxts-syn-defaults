@@ -8,17 +8,19 @@ interface SelectableGroupProps extends PropsWithChildren {
 	onSelectionChanged?: (prev: string[] | undefined,current: string[] | undefined) => void;
 }
 
-export function SelectableGroup({ config, onSelectionChanged, children }: SelectableGroupProps) {
+export function SelectableGroup({ config,onSelectionChanged,children }: SelectableGroupProps) {
 
 	const { isSingleOnly, requireSelection } = config;
 
 	const {
+		SelectionChanged,
+		idAttach,
 		selectItem,
-		isSelected,
-		SelectionChanged
+		isSelected
 	} = useSelectableGroup({ isSingleOnly, requireSelection });
 
 	const contextValue = useMemo(() => ({
+		idAttach,
 		selectItem,
 		isSelected
 	}),[selectItem,isSelected]);
@@ -34,7 +36,7 @@ export function SelectableGroup({ config, onSelectionChanged, children }: Select
 				AutomaticCanvasSize={Enum.AutomaticSize.Y}
 			>
 				<uilistlayout
-					FillDirection={Enum.FillDirection.Vertical}
+					FillDirection={Enum.FillDirection.Horizontal}
           SortOrder={Enum.SortOrder.LayoutOrder}
           Padding={new UDim(0, 5)}
 				/>

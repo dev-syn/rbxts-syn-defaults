@@ -14,9 +14,10 @@ type SelectionChangedEvent = Signal<[prev: SelectionData[] | undefined, current:
 
 interface SelectableGroupReturn {
 	currentSelection: SelectionData[];
+	SelectionChanged: SelectionChangedEvent;
+	idAttach: (id: SelectionData) => void;
 	selectItem: (id: SelectionData) => void;
 	isSelected: (id: SelectionData) => boolean;
-	SelectionChanged: SelectionChangedEvent
 }
 
 export function useSelectableGroup(config: SelectableGroupConfig): SelectableGroupReturn {
@@ -29,12 +30,11 @@ export function useSelectableGroup(config: SelectableGroupConfig): SelectableGro
 	const selChangedRef = useRef(new Signal<[SelectionData[] | undefined, SelectionData[] | undefined]>());
   const SelectionChanged = useMemo(() => selChangedRef.current,[]);
 
+	const attachedIds: SelectionData[] = [];
+
 	const selectItem = useCallback((id: SelectionData) => {
 		setCurrentSelection(prevSel => {
 			const isAlreadySel = prevSel.includes(id);
-
-			let prevSnap = [...prevSel];
-			let newSel: SelectionData[] = [...prevSel];
 
 			if (isSingleOnly) {
 				if (isAlreadySel) {
@@ -51,6 +51,19 @@ export function useSelectableGroup(config: SelectableGroupConfig): SelectableGro
 			}
 		})
 	},[isSingleOnly,requireSelection]);
+
+	const idAttach = useCallback((id: SelectionData) => {
+		attachedIds.push(id);
+	},[]);
+
+	useEffect(() => {
+		if (requireSelection && currentSelection.size() === 0 && attachedIds.size() > 0) {
+			const randomIndex: number = math.random(1,attachedIds.size());
+			const defaultID = attachedIds[randomIndex - 1];
+
+			setCurrentSelection(() => [defaultID]);
+		}
+	},[requireSelection,attachedIds,isSingleOnly]);
 
 	useEffect(() => {
 		const prev = prevSelectionRef.current;
@@ -78,8 +91,9 @@ export function useSelectableGroup(config: SelectableGroupConfig): SelectableGro
 
 	return {
 		currentSelection,
+		SelectionChanged,
+		idAttach,
 		selectItem,
 		isSelected,
-		SelectionChanged
 	};
 }
