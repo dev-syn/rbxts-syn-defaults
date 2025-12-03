@@ -29,9 +29,11 @@ const SELECTED_STYLE = {
 const DEFAULT_BG: Color3 = Color3.fromRGB(60,60,60);
 
 export function SelectableItem(props: SelectableItemProps) {
-	const { selectItem, isSelected } = useContext(SelectableGroupContext);
+	const { selectItem, isSelected, idAttach } = useContext(SelectableGroupContext);
 
-	const type = props.btnType ?? "TextButton";
+	idAttach(props.id);
+
+	const btnType = props.btnType ?? "TextButton";
 	const isCurrentlySelected: boolean = isSelected(props.id);
 
 	const handleClick = React.useCallback(() => {
@@ -42,15 +44,20 @@ export function SelectableItem(props: SelectableItemProps) {
 		MouseButton1Click: handleClick
 	};
 
-	if (type === "ImageButton") {
-		const { id,btnType,...nativeProps } = props as ImageModeProps;
+	const nativeProps = {...props} as Record<string,unknown>;
 
+	delete nativeProps.id;
+	delete nativeProps.btnType;
+	delete nativeProps.children;
+
+	if (btnType === "ImageButton") {
 		return (
 			<imagebutton
 				{...nativeProps}
 
 				LayoutOrder={1}
 				BackgroundColor3={DEFAULT_BG}
+				BorderMode={Enum.BorderMode.Inset}
 
 				{...(isCurrentlySelected ? SELECTED_STYLE : DEFAULT_STYLE)}
 
@@ -58,8 +65,6 @@ export function SelectableItem(props: SelectableItemProps) {
 			/>
 		);
 	} else {
-		const { id,btnType,...nativeProps } = props as TextModeProps;
-
 		return (
 			<textbutton
 				{...nativeProps}
@@ -67,6 +72,7 @@ export function SelectableItem(props: SelectableItemProps) {
 				LayoutOrder={1}
 				BackgroundColor3={DEFAULT_BG}
 				TextXAlignment={Enum.TextXAlignment.Center}
+				BorderMode={Enum.BorderMode.Inset}
 
 				{...(isCurrentlySelected ? SELECTED_STYLE : DEFAULT_STYLE)}
 
