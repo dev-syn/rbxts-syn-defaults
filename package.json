@@ -5,9 +5,9 @@
   "main": "out/init.luau",
   "scripts": {
     "build": "rbxtsc -p ./tsconfig.pkg.json --rojo default.project.json",
-		"build:d": "rbxtsc -p ./tsconfig.test.json --rojo tests/test.project.json --type game",
+    "build:d": "rbxtsc -p ./tsconfig.test.json --rojo tests/test.project.json --type game",
     "watch": "rbxtsc -p ./tsconfig.pkg.json --rojo default.project.json -w",
-		"watch:d": "rbxtsc -p ./tsconfig.test.json --rojo tests/test.project.json --type game -w",
+    "watch:d": "rbxtsc -p ./tsconfig.test.json --rojo tests/test.project.json --type game -w",
     "prepublishOnly": "npm run build"
   },
   "keywords": [],
@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@rbxts/beacon": "^2.1.1",
+    "@rbxts/object-utils": "^1.0.4",
     "@rbxts/react": "^17.2.3",
     "@rbxts/react-roblox": "^17.2.3",
     "@rbxts/services": "^1.6.0",
