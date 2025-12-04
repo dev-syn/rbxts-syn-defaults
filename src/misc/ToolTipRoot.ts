@@ -3,7 +3,7 @@ import { Players } from '@rbxts/services';
 const TOOLTIP_ROOT_NAME = "ROOT_TOOLTIP";
 
 function getOrCreateRootUI(): ScreenGui {
-	const playerGui = Players.LocalPlayer?.FindFirstAncestorOfClass("PlayerGui");
+	const playerGui = Players.LocalPlayer?.WaitForChild("PlayerGui");
 	if (!playerGui) throw error("Cannot find PlayerGui for the local player.");
 
 	let rootUI = playerGui.FindFirstChild(TOOLTIP_ROOT_NAME) as ScreenGui;
@@ -15,6 +15,7 @@ function getOrCreateRootUI(): ScreenGui {
 
 	rootUI.ResetOnSpawn = false;
 	rootUI.ZIndexBehavior = Enum.ZIndexBehavior.Global;
+	rootUI.DisplayOrder = 1000;
 
 	rootUI.Parent = playerGui;
 
