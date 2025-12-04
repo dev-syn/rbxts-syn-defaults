@@ -24,15 +24,13 @@ interface BoundsLayout {
 	Size: BoundCoord;
 }
 
-const EmptyBoundsLayout = {
+const EmptyBoundsLayout: BoundsLayout = {
 	C1: { X: 0,Y: 0 },
 	C2: { X: 0,Y: 0 },
 	C3: { X: 0,Y: 0 },
 	C4: { X: 0,Y: 0 },
 	Size: { X: 0,Y: 0 }
 };
-
-const PlayerGui = Players.LocalPlayer?.FindFirstChildOfClass("PlayerGui");
 
 export function useBoundCheck(
 	instRef: React.RefObject<GuiObject | undefined>,
@@ -72,32 +70,12 @@ export function useBoundCheck(
 		const owner = instRef.current;
 		const ancestorSG = ancestorSGRef.current;
 		// Exit if neccessary services/objects are missing
+		const PlayerGui = Players.LocalPlayer?.FindFirstChildOfClass("PlayerGui");
 		if (!owner || !ancestorSG || !PlayerGui) return;
 
 		// As of v0.1.0, bound check queries will only be calculated when a mouse position is available.
 		const mousePos = UserInputService.GetMouseLocation();
 		if (!mousePos) return;
-
-		// Visibility check
-		if (considerVisibility && !owner.Visible) {
-			setWithinBounds(prev => {
-				if (prev) boundExitRef.current.Fire();
-				return false;
-			});
-			return;
-		}
-
-		// TopMostOnly check
-		if (topMostOnly && PlayerGui) {
-			const uis: GuiObject[] = PlayerGui.GetGuiObjectsAtPosition(mousePos.X,mousePos.Y);
-			if (uis.size() === 0 || uis[0] !== owner) {
-				if (withinBounds) {
-					setWithinBounds(false);
-					boundExitRef.current.Fire();
-				}
-				return;
-			}
-		}
 
 		const absXSize: number = owner.AbsoluteSize.X;
 		const absYSize: number = owner.AbsoluteSize.Y;
@@ -114,29 +92,48 @@ export function useBoundCheck(
 		// Checking the bounds
 		const withinX: boolean = mousePos.X >= leftAbsX && mousePos.X <= rightAbsX;
 		const withinY: boolean = mousePos.Y >= topAbsY && mousePos.Y <= bottomAbsY;
-		const inBounds: boolean = withinX && withinY;
+		let inBounds: boolean = withinX && withinY;
 
-		setBounds({
-			// Top Left
-			C1: { X: leftAbsX,Y: topAbsY},
-			// Top Right
-			C2: { X: rightAbsX,Y: topAbsY},
-			// Bottom Left
-			C3: { X: leftAbsX,Y: bottomAbsY},
-			// Bottom Right
-			C4: { X: rightAbsX,Y: bottomAbsY},
-			// Bound Size
-			Size: { X: absXSize, Y: absYSize }
+		setWithinBounds(prevWithinBounds => {
+			// Visibility check
+			if (considerVisibility && !owner.Visible) {
+				if (prevWithinBounds) boundExitRef.current.Fire();
+				return false;
+			}
+
+			// TopMostOnly check
+			if (topMostOnly && inBounds) {
+				const uis: GuiObject[] = PlayerGui.GetGuiObjectsAtPosition(mousePos.X,mousePos.Y);
+				if (uis.size() === 0 || uis[0] !== owner) {
+					inBounds = false;
+				}
+			}
+
+			if (inBounds && !prevWithinBounds) {
+				setBounds({
+					// Top Left
+					C1: { X: leftAbsX,Y: topAbsY},
+					// Top Right
+					C2: { X: rightAbsX,Y: topAbsY},
+					// Bottom Left
+					C3: { X: leftAbsX,Y: bottomAbsY},
+					// Bottom Right
+					C4: { X: rightAbsX,Y: bottomAbsY},
+					// Bound Size
+					Size: { X: absXSize, Y: absYSize }
+				});
+
+				boundEnterRef.current.Fire();
+				return true;
+			} else if (!inBounds && prevWithinBounds) {
+				boundExitRef.current.Fire();
+				return false;
+			}
+
+			return prevWithinBounds;
 		});
 
-		if (inBounds && !withinBounds) {
-			setWithinBounds(true);
-			boundEnterRef.current.Fire();
-		} else if (!inBounds && withinBounds) {
-			setWithinBounds(false);
-			boundExitRef.current.Fire();
-		}
-	}, [
+	},[
 		topMostOnly,
 		ignoreGuiInset,
 		considerVisibility,
