@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from '@rbxts
 import { Signal } from '@rbxts/beacon';
 import { Players, RunService, UserInputService } from '@rbxts/services';
 
-interface BoundCheckOptions {
+export interface BoundCheckOptions {
 	/** Should only the top-most element be considered? */
 	topMostOnly: boolean;
 	/** Should we ignore Roblox's default bar at the top of the screen during calculations. */
