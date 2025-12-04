@@ -16,7 +16,6 @@ export function ToolTipDisplay({ data,imageContent }: ToolTipProps) {
 	const contentSize = hasImageBackground ? DEFAULT_IMAGE_SIZE : DEFAULT_TEXT_SIZE;
 
 	const posOffset = UDim2.fromOffset(data.pos.X,data.pos.Y);
-
 	let textStr = tostring(data.content);
 
 	const children: React.ReactElement[] = [];
@@ -39,11 +38,11 @@ export function ToolTipDisplay({ data,imageContent }: ToolTipProps) {
 		<textlabel
 			key={"TextDisplay"}
 			Text={textStr}
-			Size={UDim2.fromScale(1, 1)}
+			Size={UDim2.fromScale(1,1)}
 			BackgroundTransparency={1}
 			Font={Enum.Font.SourceSans}
 			TextColor3={new Color3(1,1,1)}
-			TextSize={14}
+			TextSize={16}
 			TextWrapped={true}
 			TextXAlignment={Enum.TextXAlignment.Center}
 			TextYAlignment={Enum.TextYAlignment.Center}
@@ -54,13 +53,12 @@ export function ToolTipDisplay({ data,imageContent }: ToolTipProps) {
 	return (
 		<frame
 			key={"ToolTipFrame"}
-			AnchorPoint={new Vector2(0.5,1)}
 			Position={posOffset}
 			Size={contentSize}
 			BackgroundColor3={Color3.fromRGB(75,75,75)}
 			BackgroundTransparency={0}
 			BorderSizePixel={0}
-			ZIndex={1000}
+			ZIndex={0}
 		>
 			{children}
 		</frame>
