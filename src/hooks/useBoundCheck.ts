@@ -16,35 +16,21 @@ interface BoundCoord {
 	Y: number;
 }
 
-class BoundsLayout {
-	readonly C1: BoundCoord;
-	readonly C2: BoundCoord;
-	readonly C3: BoundCoord;
-	readonly C4: BoundCoord;
-	readonly Size: BoundCoord;
-
-	constructor(
-		c1: BoundCoord,
-		c2: BoundCoord,
-		c3: BoundCoord,
-		c4: BoundCoord,
-		size: BoundCoord
-	) {
-		this.C1 = c1;
-		this.C2 = c2;
-		this.C3 = c3;
-		this.C4 = c4;
-		this.Size = size;
-	}
+interface BoundsLayout {
+	C1: BoundCoord;
+	C2: BoundCoord;
+	C3: BoundCoord;
+	C4: BoundCoord;
+	Size: BoundCoord;
 }
 
-const EmptyBoundsLayout = new BoundsLayout(
-	{ X: 0, Y: 0 },
-	{ X: 0, Y: 0 },
-	{ X: 0, Y: 0 },
-	{ X: 0, Y: 0 },
-	{ X: 0, Y: 0 }
-);
+const EmptyBoundsLayout = {
+	C1: { X: 0,Y: 0 },
+	C2: { X: 0,Y: 0 },
+	C3: { X: 0,Y: 0 },
+	C4: { X: 0,Y: 0 },
+	Size: { X: 0,Y: 0 }
+};
 
 const PlayerGui = Players.LocalPlayer?.FindFirstChildOfClass("PlayerGui");
 
@@ -84,9 +70,9 @@ export function useBoundCheck(
 
 	const queryBounds = useCallback(() => {
 		const owner = instRef.current;
-
 		const ancestorSG = ancestorSGRef.current;
-		if (!owner || !ancestorSG) return;
+		// Exit if neccessary services/objects are missing
+		if (!owner || !ancestorSG || !PlayerGui) return;
 
 		// As of v0.1.0, bound check queries will only be calculated when a mouse position is available.
 		const mousePos = UserInputService.GetMouseLocation();
@@ -94,11 +80,10 @@ export function useBoundCheck(
 
 		// Visibility check
 		if (considerVisibility && !owner.Visible) {
-			// Force exit if visibility is considered but NOT visible
-			if (withinBounds) {
-				setWithinBounds(false);
-				boundExitRef.current.Fire();
-			}
+			setWithinBounds(prev => {
+				if (prev) boundExitRef.current.Fire();
+				return false;
+			});
 			return;
 		}
 
@@ -131,18 +116,18 @@ export function useBoundCheck(
 		const withinY: boolean = mousePos.Y >= topAbsY && mousePos.Y <= bottomAbsY;
 		const inBounds: boolean = withinX && withinY;
 
-		setBounds(new BoundsLayout(
+		setBounds({
 			// Top Left
-			{ X: leftAbsX, Y: topAbsY },
+			C1: { X: leftAbsX,Y: topAbsY},
 			// Top Right
-			{ X: rightAbsX, Y: topAbsY },
+			C2: { X: rightAbsX,Y: topAbsY},
 			// Bottom Left
-			{ X: leftAbsX, Y: bottomAbsY },
+			C3: { X: leftAbsX,Y: bottomAbsY},
 			// Bottom Right
-			{ X: rightAbsX, Y: bottomAbsY },
+			C4: { X: rightAbsX,Y: bottomAbsY},
 			// Bound Size
-			{ X: absXSize, Y: absYSize }
-		));
+			Size: { X: absXSize, Y: absYSize }
+		});
 
 		if (inBounds && !withinBounds) {
 			setWithinBounds(true);
@@ -155,7 +140,6 @@ export function useBoundCheck(
 		topMostOnly,
 		ignoreGuiInset,
 		considerVisibility,
-		withinBounds,
 		instRef.current
 	]);
 
