@@ -1,53 +1,92 @@
 import { useEffect, useState } from '@rbxts/react';
 import { BoundCheckOptions, useBoundCheck } from './useBoundCheck';
+import { RunService } from '@rbxts/services';
+
+const DEFAULT_ANCHOR = new Vector2(0,0);
+
+interface ToolTipPosition {
+	TargetRelative: "TargetRelative",
+	MouseBased: "MouseBased"
+}
+export const ToolTipPosition: ToolTipPosition = {
+	TargetRelative: "TargetRelative",
+	MouseBased: "MouseBased"
+};
 
 export interface ToolTipConfig {
-	delayMs?: number; // Time before the ToolTip is shown
 	content: string | number;
+	/** Determines how the ToolTip gets positioned. */
+	positioningMode: keyof typeof ToolTipPosition;
+	/** How long will the ToolTip delay before being displayed. */
+	delayMs?: number;
+	/** Determines how the ToolTip will be position relative to the elements bounds. */
+	anchorPos?: Vector2;
 }
 
 export interface ToolTipState {
+	/** Is the ToolTip showing */
 	isShowing: boolean;
+	/** Where should the element be positioned */
 	pos: Vector2;
+	/**  What anchor point will we use for our positioning */
+	anchorPos: Vector2;
 	content: string | number;
 }
 
 const DEFAULT_BOUND_OPTIONS: BoundCheckOptions = {
 	topMostOnly: false,
-	ignoreGuiInset: true,
 	considerVisibility: true
 };
 
 export function useToolTip(
 	targetRef: React.RefObject<GuiObject | undefined>,
 	config: ToolTipConfig
-): ToolTipState | null {
-	const { delayMs = 100,content } = config;
-	const [toolTipState, setToolTipState] = useState<ToolTipState | null>(null);
+): ToolTipState | undefined {
+	const { delayMs = 0,content } = config;
+	const [toolTipState, setToolTipState] = useState<ToolTipState | undefined>(undefined);
 
 	const { withinBounds, bounds } = useBoundCheck(targetRef,DEFAULT_BOUND_OPTIONS);
 
+	const updateToolTipState = () => {
+		const anchorPos = config.anchorPos !== undefined
+		? config.anchorPos : DEFAULT_ANCHOR;
+
+		// Top-left is how the underlying ToolTips element is positioned
+		let xPos = bounds.C1.X, yPos = bounds.C1.Y;
+		const pos = new Vector2(xPos,yPos);
+
+		setToolTipState({
+			isShowing: true,
+			pos: pos,
+			anchorPos: anchorPos,
+			content: content
+		});
+	};
+
+	const showToolTipWithDelay = () => {
+		const delay = delayMs / 1000;
+		let elapsed = 0;
+
+		while (elapsed < delay) {
+			const [dt] = RunService.Heartbeat.Wait();
+			elapsed += dt;
+		}
+
+		updateToolTipState();
+	};
+
 	useEffect(() => {
-		let timer: thread | undefined;
+		let delayThread: thread | undefined;
 
 		if (withinBounds) {
-			timer = task.delay(delayMs / 1000, () => {
-				const pos = new Vector2(
-					bounds.C1.X + bounds.Size.X / 2, // Center X
-					bounds.C1.Y // Top Y
-				);
-
-				setToolTipState({
-					isShowing: true,
-					pos: pos,
-					content: content
-				});
-				
-			});
-		} else setToolTipState(null);
+			if (delayMs > 0) {
+				delayThread = coroutine.create(showToolTipWithDelay);
+				coroutine.resume(delayThread);
+			} else updateToolTipState();
+		} else setToolTipState(undefined);
 
 		return () => {
-			if (timer && coroutine.status(timer) !== "dead") task.cancel(timer);
+			if (delayThread && coroutine.status(delayThread) === "suspended") task.cancel(delayThread);
 		};
 	},[withinBounds,bounds,delayMs,content]);
 	return toolTipState;
