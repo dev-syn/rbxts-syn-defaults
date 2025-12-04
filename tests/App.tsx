@@ -3,6 +3,7 @@ import { CloseBtn } from './CloseBtn';
 import { SelectableGroup } from './SelectableGroup';
 import { SelectableItem } from './components/SelectableItem';
 import Object from '@rbxts/object-utils';
+import { ToolTipSample } from './SampleToolTip';
 
 export const App = () => {
 	
@@ -17,7 +18,7 @@ export const App = () => {
 				<uigridlayout
 				CellSize={new UDim2(0,200,0,200)}
 				FillDirection={Enum.FillDirection.Horizontal}
-				CellPadding={UDim2.fromScale(0.025,0.05)}
+				CellPadding={UDim2.fromScale(0.025,0)} // 0.05
 				FillDirectionMaxCells={4}
 				
 				/>
@@ -51,6 +52,8 @@ export const App = () => {
 					Size={UDim2.fromOffset(50,50)}
 				/>
 				</SelectableGroup>
+
+				<ToolTipSample/>
 
 			</scrollingframe>
 		</screengui>

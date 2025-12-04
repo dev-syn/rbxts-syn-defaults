@@ -21,7 +21,8 @@
 				"$path": "../out/src",
 
 				"App": { "$path": "../out/tests/App.luau" },
-				"SelectableGroup": { "$path": "../out/tests/SelectableGroup.luau" }
+				"SelectableGroup": { "$path": "../out/tests/SelectableGroup.luau" },
+				"SampleToolTip": { "$path": "../out/tests/SampleToolTip.luau" }
 			}
 		},
 		"StarterPlayer": {
