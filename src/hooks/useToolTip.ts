@@ -21,7 +21,7 @@ const DEFAULT_BOUND_OPTIONS: BoundCheckOptions = {
 export function useToolTip(
 	targetRef: React.RefObject<GuiObject | undefined>,
 	config: ToolTipConfig
-) {
+): ToolTipState | null {
 	const { delayMs = 100,content } = config;
 	const [toolTipState, setToolTipState] = useState<ToolTipState | null>(null);
 
@@ -50,4 +50,5 @@ export function useToolTip(
 			if (timer && coroutine.status(timer) !== "dead") task.cancel(timer);
 		};
 	},[withinBounds,bounds,delayMs,content]);
+	return toolTipState;
 }
