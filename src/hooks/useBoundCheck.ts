@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from '@rbxts/react';
 import { Signal } from '@rbxts/beacon';
-import { Players, RunService, UserInputService } from '@rbxts/services';
+import { Players, RunService, UserInputService, GuiService } from '@rbxts/services';
 
 export interface BoundCheckOptions {
-	/** Should only the top-most element be considered? */
+	/** Should only the top-most element be considered */
 	topMostOnly: boolean;
-	/** Should we ignore Roblox's default bar at the top of the screen during calculations. */
-	ignoreGuiInset: boolean;
-	/** Do we care if the element is visible or not? */
+	/** Do we care if the element is visible or not */
 	considerVisibility: boolean;
 }
 
@@ -17,11 +15,21 @@ interface BoundCoord {
 }
 
 interface BoundsLayout {
+	/** The absolute position of the top-left corner of this bounding box */
 	C1: BoundCoord;
+	/** The absolute position of the top-right corner of this bounding box */
 	C2: BoundCoord;
+	/** The absolute position of the bottom-left corner of this bounding box */
 	C3: BoundCoord;
+	/** The absolute position of the bottom-right corner of this bounding box */
 	C4: BoundCoord;
+	/** The size in pixels of this bounding box */
 	Size: BoundCoord;
+	/**
+	 * The last charted position of the mouse.
+	 * (Note: This mouse position has been adjusted to reflect the GuiInset.)
+	 */
+	LastChartedPos: Vector2 | undefined;
 }
 
 const EmptyBoundsLayout: BoundsLayout = {
@@ -29,14 +37,15 @@ const EmptyBoundsLayout: BoundsLayout = {
 	C2: { X: 0,Y: 0 },
 	C3: { X: 0,Y: 0 },
 	C4: { X: 0,Y: 0 },
-	Size: { X: 0,Y: 0 }
+	Size: { X: 0,Y: 0 },
+	LastChartedPos: undefined
 };
 
 export function useBoundCheck(
 	instRef: React.RefObject<GuiObject | undefined>,
 	options: BoundCheckOptions
 ) {
-	const { topMostOnly, ignoreGuiInset, considerVisibility } = options;
+	const { topMostOnly, considerVisibility } = options;
 
 	// Create the state that manages when within bounds
 	const [withinBounds, setWithinBounds] = useState(false);
@@ -71,6 +80,7 @@ export function useBoundCheck(
 		const ancestorSG = ancestorSGRef.current;
 		// Exit if neccessary services/objects are missing
 		const PlayerGui = Players.LocalPlayer?.FindFirstChildOfClass("PlayerGui");
+
 		if (!owner || !ancestorSG || !PlayerGui) return;
 
 		// As of v0.1.0, bound check queries will only be calculated when a mouse position is available.
@@ -80,18 +90,19 @@ export function useBoundCheck(
 		const absXSize: number = owner.AbsoluteSize.X;
 		const absYSize: number = owner.AbsoluteSize.Y;
 
-		const leftAbsX: number = owner.AbsolutePosition.X;
+		const [topLeft,_] = GuiService.GetGuiInset();
+
+		const leftAbsX: number = owner.AbsolutePosition.X
 		const rightAbsX: number = leftAbsX + absXSize;
 
-		const topAbsY: number = !ignoreGuiInset
-			? owner.AbsolutePosition.Y - ancestorSG.AbsolutePosition.Y
-			: owner.AbsolutePosition.Y;
-		
+		const topAbsY: number = owner.AbsolutePosition.Y
 		const bottomAbsY: number = topAbsY + absYSize;
 
+		const adjustedMousePos = new Vector2(mousePos.X - topLeft.X,mousePos.Y - topLeft.Y);
+
 		// Checking the bounds
-		const withinX: boolean = mousePos.X >= leftAbsX && mousePos.X <= rightAbsX;
-		const withinY: boolean = mousePos.Y >= topAbsY && mousePos.Y <= bottomAbsY;
+		const withinX: boolean = adjustedMousePos.X >= leftAbsX && adjustedMousePos.X <= rightAbsX;
+		const withinY: boolean = adjustedMousePos.Y >= topAbsY && adjustedMousePos.Y <= bottomAbsY;
 		let inBounds: boolean = withinX && withinY;
 
 		setWithinBounds(prevWithinBounds => {
@@ -120,7 +131,8 @@ export function useBoundCheck(
 					// Bottom Right
 					C4: { X: rightAbsX,Y: bottomAbsY},
 					// Bound Size
-					Size: { X: absXSize, Y: absYSize }
+					Size: { X: absXSize, Y: absYSize },
+					LastChartedPos: adjustedMousePos
 				});
 
 				boundEnterRef.current.Fire();
@@ -135,7 +147,6 @@ export function useBoundCheck(
 
 	},[
 		topMostOnly,
-		ignoreGuiInset,
 		considerVisibility,
 		instRef.current
 	]);
