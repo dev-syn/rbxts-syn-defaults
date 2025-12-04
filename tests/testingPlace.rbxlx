@@ -27,10 +27,12 @@
 			<token name="MeshPartHeadsAndAccessories">0</token>
 			<token name="ModelStreamingBehavior">0</token>
 			<token name="MoverConstraintRootBehavior">0</token>
+			<token name="NextGenerationReplication">0</token>
 			<token name="PathfindingUseImprovedSearch">0</token>
 			<token name="PhysicsImprovedSleep">0</token>
 			<token name="PhysicsSteppingMethod">0</token>
 			<token name="PlayerCharacterDestroyBehavior">0</token>
+			<token name="PlayerScriptsUseInputActionSystem">0</token>
 			<token name="PrimalPhysicsSolver">0</token>
 			<token name="RejectCharacterDeletions">0</token>
 			<token name="RenderingCacheOptimizations">0</token>
@@ -46,6 +48,7 @@
 			<bool name="TerrainWeldsFixed">true</bool>
 			<token name="TouchEventsUseCollisionGroups">0</token>
 			<bool name="TouchesUseCollisionGroups">false</bool>
+			<token name="UseFixedSimulation">0</token>
 			<token name="UseNewLuauTypeSolver">1</token>
 			<token name="LevelOfDetail">0</token>
 			<CoordinateFrame name="ModelMeshCFrame">
@@ -1039,6 +1042,32 @@ end)
 			<BinaryString name="Tags"></BinaryString>
 			<UniqueId name="UniqueId">107f3cf6ea35673b0933809f00000350</UniqueId>
 		</Properties>
+		<Item class="ScreenGui" referent="RBX82CB55D480BD4CB0A5EE635111A361A0">
+			<Properties>
+				<bool name="ClipToDeviceSafeArea">true</bool>
+				<int name="DisplayOrder">0</int>
+				<token name="SafeAreaCompatibility">1</token>
+				<token name="ScreenInsets">1</token>
+				<bool name="Enabled">true</bool>
+				<bool name="ResetOnSpawn">true</bool>
+				<token name="ZIndexBehavior">1</token>
+				<bool name="AutoLocalize">true</bool>
+				<Ref name="RootLocalizationTable">null</Ref>
+				<token name="SelectionBehaviorDown">0</token>
+				<token name="SelectionBehaviorLeft">0</token>
+				<token name="SelectionBehaviorRight">0</token>
+				<token name="SelectionBehaviorUp">0</token>
+				<bool name="SelectionGroup">false</bool>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+				<string name="Name">ScreenGui</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+				<UniqueId name="UniqueId">1cf50d17d59460f40942fc2700002e8c</UniqueId>
+			</Properties>
+		</Item>
 	</Item>
 	<Item class="LocalizationService" referent="RBX1E0543518DB14D129437C550CC817FEA">
 		<Properties>
@@ -73224,6 +73253,139 @@ return module
 							</Properties>
 						</Item>
 					</Item>
+					<Item class="ModuleScript" referent="RBX054E60BA2A4A4AB793025B1DBECBE7EE">
+						<Properties>
+							<Content name="LinkedSource"><null></null></Content>
+							<ProtectedString name="Source"><![CDATA[local HttpService = game:GetService("HttpService")
+
+local Object = {}
+
+function Object.keys(object)
+	local result = table.create(#object)
+	for key in pairs(object) do
+		result[#result + 1] = key
+	end
+	return result
+end
+
+function Object.values(object)
+	local result = table.create(#object)
+	for _, value in pairs(object) do
+		result[#result + 1] = value
+	end
+	return result
+end
+
+function Object.entries(object)
+	local result = table.create(#object)
+	for key, value in pairs(object) do
+		result[#result + 1] = { key, value }
+	end
+	return result
+end
+
+function Object.assign(toObj, ...)
+	for i = 1, select("#", ...) do
+		local arg = select(i, ...)
+		if type(arg) == "table" then
+			for key, value in pairs(arg) do
+				toObj[key] = value
+			end
+		end
+	end
+	return toObj
+end
+
+function Object.copy(object)
+	local result = table.create(#object)
+	for k, v in pairs(object) do
+		result[k] = v
+	end
+	return result
+end
+
+local function deepCopyHelper(object, encountered)
+	local result = table.create(#object)
+	encountered[object] = result
+
+	for k, v in pairs(object) do
+		if type(k) == "table" then
+			k = encountered[k] or deepCopyHelper(k, encountered)
+		end
+
+		if type(v) == "table" then
+			v = encountered[v] or deepCopyHelper(v, encountered)
+		end
+
+		result[k] = v
+	end
+
+	return result
+end
+
+function Object.deepCopy(object)
+	return deepCopyHelper(object, {})
+end
+
+function Object.deepEquals(a, b)
+	-- a[k] == b[k]
+	for k in pairs(a) do
+		local av = a[k]
+		local bv = b[k]
+		if type(av) == "table" and type(bv) == "table" then
+			local result = Object.deepEquals(av, bv)
+			if not result then
+				return false
+			end
+		elseif av ~= bv then
+			return false
+		end
+	end
+
+	-- extra keys in b
+	for k in pairs(b) do
+		if a[k] == nil then
+			return false
+		end
+	end
+
+	return true
+end
+
+function Object.toString(data)
+	return HttpService:JSONEncode(data)
+end
+
+function Object.isEmpty(object)
+	return next(object) == nil
+end
+
+function Object.fromEntries(entries)
+	local entriesLen = #entries
+
+	local result = table.create(entriesLen)
+	if entries then
+		for i = 1, entriesLen do
+			local pair = entries[i]
+			result[pair[1]] = pair[2]
+		end
+	end
+	return result
+end
+
+return Object
+]]></ProtectedString>
+							<string name="ScriptGuid">{4FA5AF6A-FEFC-4338-BFCB-9FDA866DE72D}</string>
+							<BinaryString name="AttributesSerialize"></BinaryString>
+							<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+							<bool name="DefinesCapabilities">false</bool>
+							<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+							<string name="Name">object-utils</string>
+							<int64 name="SourceAssetId">-1</int64>
+							<BinaryString name="Tags"></BinaryString>
+							<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029b9</UniqueId>
+						</Properties>
+					</Item>
 				</Item>
 			</Item>
 		</Item>
@@ -73390,51 +73552,33 @@ local _services = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts
 local Players = _services.Players
 local RunService = _services.RunService
 local UserInputService = _services.UserInputService
-local BoundsLayout
-do
-	BoundsLayout = setmetatable({}, {
-		__tostring = function()
-			return "BoundsLayout"
-		end,
-	})
-	BoundsLayout.__index = BoundsLayout
-	function BoundsLayout.new(...)
-		local self = setmetatable({}, BoundsLayout)
-		return self:constructor(...) or self
-	end
-	function BoundsLayout:constructor(c1, c2, c3, c4, size)
-		self.C1 = c1
-		self.C2 = c2
-		self.C3 = c3
-		self.C4 = c4
-		self.Size = size
-	end
-end
-local EmptyBoundsLayout = BoundsLayout.new({
-	X = 0,
-	Y = 0,
-}, {
-	X = 0,
-	Y = 0,
-}, {
-	X = 0,
-	Y = 0,
-}, {
-	X = 0,
-	Y = 0,
-}, {
-	X = 0,
-	Y = 0,
-})
-local _PlayerGui = Players.LocalPlayer
-if _PlayerGui ~= nil then
-	_PlayerGui = _PlayerGui:FindFirstChildOfClass("PlayerGui")
-end
-local PlayerGui = _PlayerGui
+local GuiService = _services.GuiService
+local EmptyBoundsLayout = {
+	C1 = {
+		X = 0,
+		Y = 0,
+	},
+	C2 = {
+		X = 0,
+		Y = 0,
+	},
+	C3 = {
+		X = 0,
+		Y = 0,
+	},
+	C4 = {
+		X = 0,
+		Y = 0,
+	},
+	Size = {
+		X = 0,
+		Y = 0,
+	},
+	LastChartedPos = nil,
+}
 local function useBoundCheck(instRef, options)
 	local _binding = options
 	local topMostOnly = _binding.topMostOnly
-	local ignoreGuiInset = _binding.ignoreGuiInset
 	local considerVisibility = _binding.considerVisibility
 	-- Create the state that manages when within bounds
 	local withinBounds, setWithinBounds = useState(false)
@@ -73465,7 +73609,13 @@ local function useBoundCheck(instRef, options)
 	local queryBounds = useCallback(function()
 		local owner = instRef.current
 		local ancestorSG = ancestorSGRef.current
-		if not owner or not ancestorSG then
+		-- Exit if neccessary services/objects are missing
+		local _PlayerGui = Players.LocalPlayer
+		if _PlayerGui ~= nil then
+			_PlayerGui = _PlayerGui:FindFirstChildOfClass("PlayerGui")
+		end
+		local PlayerGui = _PlayerGui
+		if not owner or not ancestorSG or not PlayerGui then
 			return nil
 		end
 		-- As of v0.1.0, bound check queries will only be calculated when a mouse position is available.
@@ -73473,60 +73623,66 @@ local function useBoundCheck(instRef, options)
 		if not mousePos then
 			return nil
 		end
-		-- Visibility check
-		if considerVisibility and not owner.Visible then
-			-- Force exit if visibility is considered but NOT visible
-			if withinBounds then
-				setWithinBounds(false)
-				boundExitRef.current:Fire()
-			end
-			return nil
-		end
-		-- TopMostOnly check
-		if topMostOnly and PlayerGui then
-			local uis = PlayerGui:GetGuiObjectsAtPosition(mousePos.X, mousePos.Y)
-			if #uis == 0 or uis[1] ~= owner then
-				if withinBounds then
-					setWithinBounds(false)
-					boundExitRef.current:Fire()
-				end
-				return nil
-			end
-		end
 		local absXSize = owner.AbsoluteSize.X
 		local absYSize = owner.AbsoluteSize.Y
+		local topLeft, _ = GuiService:GetGuiInset()
 		local leftAbsX = owner.AbsolutePosition.X
 		local rightAbsX = leftAbsX + absXSize
-		local topAbsY = if not ignoreGuiInset then owner.AbsolutePosition.Y - ancestorSG.AbsolutePosition.Y else owner.AbsolutePosition.Y
+		local topAbsY = owner.AbsolutePosition.Y
 		local bottomAbsY = topAbsY + absYSize
+		local adjustedMousePos = Vector2.new(mousePos.X - topLeft.X, mousePos.Y - topLeft.Y)
 		-- Checking the bounds
-		local withinX = mousePos.X >= leftAbsX and mousePos.X <= rightAbsX
-		local withinY = mousePos.Y >= topAbsY and mousePos.Y <= bottomAbsY
+		local withinX = adjustedMousePos.X >= leftAbsX and adjustedMousePos.X <= rightAbsX
+		local withinY = adjustedMousePos.Y >= topAbsY and adjustedMousePos.Y <= bottomAbsY
 		local inBounds = withinX and withinY
-		setBounds(BoundsLayout.new({
-			X = leftAbsX,
-			Y = topAbsY,
-		}, {
-			X = rightAbsX,
-			Y = topAbsY,
-		}, {
-			X = leftAbsX,
-			Y = bottomAbsY,
-		}, {
-			X = rightAbsX,
-			Y = bottomAbsY,
-		}, {
-			X = absXSize,
-			Y = absYSize,
-		}))
-		if inBounds and not withinBounds then
-			setWithinBounds(true)
-			boundEnterRef.current:Fire()
-		elseif not inBounds and withinBounds then
-			setWithinBounds(false)
-			boundExitRef.current:Fire()
-		end
-	end, { topMostOnly, ignoreGuiInset, considerVisibility, withinBounds, instRef.current })
+		setWithinBounds(function(prevWithinBounds)
+			-- Visibility check
+			if considerVisibility and not owner.Visible then
+				if prevWithinBounds then
+					boundExitRef.current:Fire()
+				end
+				return false
+			end
+			-- TopMostOnly check
+			if topMostOnly and inBounds then
+				local uis = PlayerGui:GetGuiObjectsAtPosition(mousePos.X, mousePos.Y)
+				if #uis == 0 or uis[1] ~= owner then
+					inBounds = false
+				end
+			end
+			if inBounds and not prevWithinBounds then
+				setBounds({
+					C1 = {
+						X = leftAbsX,
+						Y = topAbsY,
+					},
+					C2 = {
+						X = rightAbsX,
+						Y = topAbsY,
+					},
+					C3 = {
+						X = leftAbsX,
+						Y = bottomAbsY,
+					},
+					C4 = {
+						X = rightAbsX,
+						Y = bottomAbsY,
+					},
+					Size = {
+						X = absXSize,
+						Y = absYSize,
+					},
+					LastChartedPos = adjustedMousePos,
+				})
+				boundEnterRef.current:Fire()
+				return true
+			elseif not inBounds and prevWithinBounds then
+				boundExitRef.current:Fire()
+				return false
+			end
+			return prevWithinBounds
+		end)
+	end, { topMostOnly, considerVisibility, instRef.current })
 	useEffect((function()
 		local instanceID = if instRef.current then tostring(instRef.current) else "N/A"
 		local connectionID = `UIPresets_BoundCheck_{instanceID}`
@@ -73576,40 +73732,30 @@ local function useSelectableGroup(config)
 	local isSingleOnly = _binding.isSingleOnly
 	local requireSelection = _binding.requireSelection
 	local currentSelection, setCurrentSelection = useState({})
+	local prevSelectionRef = useRef({})
 	local selChangedRef = useRef(Signal.new())
 	local SelectionChanged = useMemo(function()
 		return selChangedRef.current
 	end, {})
-	local isSelected = useCallback(function(id)
-		local _id = id
-		return table.find(currentSelection, _id) ~= nil
-	end, { currentSelection })
+	local attachedIds = {}
 	local selectItem = useCallback(function(id)
 		setCurrentSelection(function(prevSel)
 			local _prevSel = prevSel
 			local _id = id
 			local isAlreadySel = table.find(_prevSel, _id) ~= nil
-			local _array = {}
-			local _length = #_array
-			table.move(prevSel, 1, #prevSel, _length + 1, _array)
-			local prevSnap = _array
-			local _array_1 = {}
-			local _length_1 = #_array_1
-			table.move(prevSel, 1, #prevSel, _length_1 + 1, _array_1)
-			local newSel = _array_1
 			if isSingleOnly then
 				if isAlreadySel then
-					-- Deselecting: Check if required. I broke DRY, sue me
+					-- If required and it's the last, do nothing
 					if requireSelection and #prevSel == 1 then
 						return prevSel
 					end
-					newSel = {}
+					return {}
 				else
-					newSel = { id }
+					return { id }
 				end
 			else
 				if isAlreadySel then
-					-- Deselecting: Check if required. I broke DRY, sue me
+					-- If required and it's the last, do nothing
 					if requireSelection and #prevSel == 1 then
 						return prevSel
 					end
@@ -73618,60 +73764,86 @@ local function useSelectableGroup(config)
 					local _callback = function(item)
 						return item ~= id
 					end
-					local _length_2 = 0
+					local _length = 0
 					for _k, _v in prevSel do
 						if _callback(_v, _k - 1, prevSel) == true then
-							_length_2 += 1
-							_newValue[_length_2] = _v
+							_length += 1
+							_newValue[_length] = _v
 						end
 					end
 					-- ▲ ReadonlyArray.filter ▲
-					newSel = _newValue
+					return _newValue
 				else
-					local _array_2 = {}
-					local _length_2 = #_array_2
+					local _array = {}
+					local _length = #_array
 					local _prevSelLength = #prevSel
-					table.move(prevSel, 1, _prevSelLength, _length_2 + 1, _array_2)
-					_length_2 += _prevSelLength
-					_array_2[_length_2 + 1] = id
-					newSel = _array_2
+					table.move(prevSel, 1, _prevSelLength, _length + 1, _array)
+					_length += _prevSelLength
+					_array[_length + 1] = id
+					return _array
 				end
 			end
-			-- If any changes are noticed from the old to the new selections then we will notify the signal responders.
-			local _condition = #prevSel ~= #newSel
-			if not _condition then
-				-- ▼ ReadonlyArray.some ▼
-				local _result = false
-				local _callback = function(val, i)
-					return val ~= newSel[i + 1]
-				end
-				for _k, _v in prevSel do
-					if _callback(_v, _k - 1, prevSel) then
-						_result = true
-						break
-					end
-				end
-				-- ▲ ReadonlyArray.some ▲
-				_condition = _result
-			end
-			if _condition then
-				SelectionChanged:Fire(prevSnap, newSel)
-				return newSel
-			end
-			return prevSel
 		end)
-	end, { isSingleOnly, requireSelection, SelectionChanged })
+	end, { isSingleOnly, requireSelection })
+	local idAttach = useCallback(function(id)
+		local _id = id
+		table.insert(attachedIds, _id)
+	end, {})
+	useEffect(function()
+		if requireSelection and #currentSelection == 0 and #attachedIds > 0 then
+			local randomIndex = math.random(1, #attachedIds)
+			local defaultID = attachedIds[randomIndex]
+			setCurrentSelection(function()
+				return { defaultID }
+			end)
+		end
+	end, { requireSelection, attachedIds, isSingleOnly })
+	useEffect(function()
+		local prev = prevSelectionRef.current
+		local current = currentSelection
+		-- Prevent firing initial mount
+		if prev == current then
+			return nil
+		end
+		local _condition = #prev ~= #current
+		if not _condition then
+			-- ▼ ReadonlyArray.some ▼
+			local _result = false
+			local _callback = function(val, i)
+				return val ~= current[i + 1]
+			end
+			for _k, _v in prev do
+				if _callback(_v, _k - 1, prev) then
+					_result = true
+					break
+				end
+			end
+			-- ▲ ReadonlyArray.some ▲
+			_condition = _result
+		end
+		local hasChanged = _condition
+		if hasChanged then
+			selChangedRef.current:Fire(prev, current)
+			-- Update ref to the new current
+			prevSelectionRef.current = current
+		end
+	end, { currentSelection })
+	local isSelected = useCallback(function(id)
+		local _id = id
+		return table.find(currentSelection, _id) ~= nil
+	end, { currentSelection })
 	-- Clean up SelectionChanged signal ref
 	useEffect(function()
 		return function()
-			selChangedRef.current:Destroy()
+			return selChangedRef.current:Destroy()
 		end
 	end, {})
 	return {
 		currentSelection = currentSelection,
+		SelectionChanged = SelectionChanged,
+		idAttach = idAttach,
 		selectItem = selectItem,
 		isSelected = isSelected,
-		SelectionChanged = SelectionChanged,
 	}
 end
 return {
@@ -73689,6 +73861,94 @@ return {
 						<UniqueId name="UniqueId">107f3cf6ea35673b0933809f00000532</UniqueId>
 					</Properties>
 				</Item>
+				<Item class="ModuleScript" referent="RBX799206FE08A94976AE371825FB923E79">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local useEffect = _react.useEffect
+local useState = _react.useState
+local useBoundCheck = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useBoundCheck").useBoundCheck
+local RunService = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").RunService
+local DEFAULT_ANCHOR = Vector2.new(0, 0)
+local ToolTipPosition = {
+	TargetRelative = "TargetRelative",
+	MouseBased = "MouseBased",
+}
+local DEFAULT_BOUND_OPTIONS = {
+	topMostOnly = false,
+	considerVisibility = true,
+}
+local function useToolTip(targetRef, config)
+	local _binding = config
+	local delayMs = _binding.delayMs
+	if delayMs == nil then
+		delayMs = 0
+	end
+	local content = _binding.content
+	local toolTipState, setToolTipState = useState(nil)
+	local _binding_1 = useBoundCheck(targetRef, DEFAULT_BOUND_OPTIONS)
+	local withinBounds = _binding_1.withinBounds
+	local bounds = _binding_1.bounds
+	local updateToolTipState = function()
+		local anchorPos = if config.anchorPos ~= nil then config.anchorPos else DEFAULT_ANCHOR
+		-- Top-left is how the underlying ToolTips element is positioned
+		local xPos = bounds.C1.X
+		local yPos = bounds.C1.Y
+		local pos = Vector2.new(xPos, yPos)
+		setToolTipState({
+			isShowing = true,
+			pos = pos,
+			anchorPos = anchorPos,
+			content = content,
+		})
+	end
+	local showToolTipWithDelay = function()
+		local delay = delayMs / 1000
+		local elapsed = 0
+		while elapsed < delay do
+			local dt = RunService.Heartbeat:Wait()
+			elapsed += dt
+		end
+		updateToolTipState()
+	end
+	useEffect(function()
+		local delayThread
+		if withinBounds then
+			if delayMs > 0 then
+				delayThread = coroutine.create(showToolTipWithDelay)
+				coroutine.resume(delayThread)
+			else
+				updateToolTipState()
+			end
+		else
+			setToolTipState(nil)
+		end
+		return function()
+			if delayThread and coroutine.status(delayThread) == "suspended" then
+				task.cancel(delayThread)
+			end
+		end
+	end, { withinBounds, bounds, delayMs, content })
+	return toolTipState
+end
+return {
+	useToolTip = useToolTip,
+	ToolTipPosition = ToolTipPosition,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{07DE00C6-8ACD-4EED-83CA-A79DC87F9908}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">useToolTip</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029b7</UniqueId>
+					</Properties>
+				</Item>
 			</Item>
 			<Item class="ModuleScript" referent="RBX2297B0F482A247FEB9C87590A9CBF17E">
 				<Properties>
@@ -73697,6 +73957,9 @@ return {
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
 local CloseBtn = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "CloseBtn").CloseBtn
+local SelectableGroup = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "SelectableGroup").SelectableGroup
+local SelectableItem = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "SelectableItem").SelectableItem
+local ToolTipSample = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "SampleToolTip").ToolTipSample
 local App = function()
 	return React.createElement("screengui", {
 		ResetOnSpawn = false,
@@ -73708,9 +73971,33 @@ local App = function()
 		Position = UDim2.new(0.5, 0, 0.5, 0),
 	}, React.createElement("uigridlayout", {
 		CellSize = UDim2.new(0, 200, 0, 200),
+		FillDirection = Enum.FillDirection.Horizontal,
+		CellPadding = UDim2.fromScale(0.025, 0),
+		FillDirectionMaxCells = 4,
 	}), React.createElement(CloseBtn, {
+		size = UDim2.fromOffset(200, 200),
 		onClose = function() end,
-	})))
+	}), React.createElement(SelectableGroup, {
+		config = {
+			requireSelection = true,
+			isSingleOnly = true,
+		},
+	}, React.createElement(SelectableItem, {
+		id = "btn_A",
+		btnType = "TextButton",
+		Text = "Button A",
+		Size = UDim2.fromOffset(50, 50),
+	}), React.createElement(SelectableItem, {
+		id = "btn_B",
+		btnType = "TextButton",
+		Text = "Button B",
+		Size = UDim2.fromOffset(50, 50),
+	}), React.createElement(SelectableItem, {
+		id = "btn_C",
+		btnType = "TextButton",
+		Text = "Button C",
+		Size = UDim2.fromOffset(50, 50),
+	})), React.createElement(ToolTipSample)))
 end
 return {
 	App = App,
@@ -73738,87 +74025,391 @@ return {
 					<BinaryString name="Tags"></BinaryString>
 					<UniqueId name="UniqueId">0ace97b0e0c49523093e9ec400003645</UniqueId>
 				</Properties>
-				<Item class="ModuleScript" referent="RBXBB3763185F2841E381CBFB8CFF0E7C55">
+				<Item class="ModuleScript" referent="RBXE67083F525AB4BEBB7D180F2119F5AED">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local React = _react
+local useContext = _react.useContext
+local SelectableGroupContext = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "context", "SelectableGroupContext").SelectableGroupContext
+local DEFAULT_STYLE = {
+	BorderSizePixel = 1,
+	BorderColor3 = Color3.new(0, 0, 0),
+}
+local SELECTED_STYLE = {
+	BorderSizePixel = 2,
+	BorderColor3 = Color3.new(1, 1, 1),
+}
+local DEFAULT_BG = Color3.fromRGB(60, 60, 60)
+local function SelectableItem(props)
+	local _binding = useContext(SelectableGroupContext)
+	local selectItem = _binding.selectItem
+	local isSelected = _binding.isSelected
+	local idAttach = _binding.idAttach
+	idAttach(props.id)
+	local btnType = props.btnType or "TextButton"
+	local isCurrentlySelected = isSelected(props.id)
+	local handleClick = React.useCallback(function()
+		selectItem(props.id)
+	end, { props.id, selectItem })
+	local eventProps = {
+		MouseButton1Click = handleClick,
+	}
+	local _object = table.clone(props)
+	setmetatable(_object, nil)
+	local nativeProps = _object
+	nativeProps.id = nil
+	nativeProps.btnType = nil
+	nativeProps.children = nil
+	if btnType == "ImageButton" then
+		local _attributes = table.clone(nativeProps)
+		setmetatable(_attributes, nil)
+		_attributes.LayoutOrder = 1
+		_attributes.BackgroundColor3 = DEFAULT_BG
+		_attributes.BorderMode = Enum.BorderMode.Inset
+		for _k, _v in (if isCurrentlySelected then SELECTED_STYLE else DEFAULT_STYLE) do
+			_attributes[_k] = _v
+		end
+		_attributes.Event = eventProps
+		return React.createElement("imagebutton", _attributes)
+	else
+		local _attributes = table.clone(nativeProps)
+		setmetatable(_attributes, nil)
+		_attributes.LayoutOrder = 1
+		_attributes.BackgroundColor3 = DEFAULT_BG
+		_attributes.TextXAlignment = Enum.TextXAlignment.Center
+		_attributes.BorderMode = Enum.BorderMode.Inset
+		for _k, _v in (if isCurrentlySelected then SELECTED_STYLE else DEFAULT_STYLE) do
+			_attributes[_k] = _v
+		end
+		_attributes.Event = eventProps
+		return React.createElement("textbutton", _attributes)
+	end
+end
+return {
+	SelectableItem = SelectableItem,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{3DA185D8-5A8F-43A5-9732-810F854AE7EB}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">SelectableItem</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029b1</UniqueId>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX4FF9AC62047F4CA2B74B729A5AB15D2A">
 					<Properties>
 						<Content name="LinkedSource"><null></null></Content>
 						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
-local useSelectableGroup = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useSelectableGroup").useSelectableGroup
-local function SelectableGroup(props)
-	local _binding = useSelectableGroup({
-		isSingleOnly = true,
-		requireSelection = false,
+local DEFAULT_TEXT_SIZE = UDim2.fromOffset(120, 30)
+local DEFAULT_IMAGE_SIZE = UDim2.fromOffset(150, 150)
+local function ToolTipDisplay(_param)
+	local data = _param.data
+	local imageContent = _param.imageContent
+	local hasImageBackground = imageContent ~= nil and #imageContent > 0
+	local contentSize = if hasImageBackground then DEFAULT_IMAGE_SIZE else DEFAULT_TEXT_SIZE
+	local posOffset = UDim2.fromOffset(data.pos.X, data.pos.Y)
+	local textStr = tostring(data.content)
+	local children = {}
+	local _value = hasImageBackground and imageContent
+	if _value ~= "" and _value then
+		local _arg0 = React.createElement("imagelabel", {
+			key = "ImageBackground",
+			Image = imageContent,
+			Size = UDim2.fromScale(1, 1),
+			BackgroundTransparency = 1,
+			ZIndex = 1,
+			ScaleType = Enum.ScaleType.Slice,
+			SliceCenter = Rect.new(10, 10, 10, 10),
+		})
+		table.insert(children, _arg0)
+	end
+	local _arg0 = React.createElement("textlabel", {
+		key = "TextDisplay",
+		Text = textStr,
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Font = Enum.Font.SourceSans,
+		TextColor3 = Color3.new(1, 1, 1),
+		TextSize = 16,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextYAlignment = Enum.TextYAlignment.Center,
+		ZIndex = 2,
 	})
-	local currentSelection = _binding.currentSelection
-	local selectItem = _binding.selectItem
-	local isSelected = _binding.isSelected
-	local SelectionChanged = _binding.SelectionChanged
-	return React.createElement("scrollingframe", {
-		BackgroundColor3 = Color3.fromRGB(105, 105, 105),
-	}, React.createElement("uilistlayout"), React.createElement("textbutton", {
-		LayoutOrder = 1,
-		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
-		TextXAlignment = Enum.TextXAlignment.Center,
-		Text = "A button.",
-	}), React.createElement("textbutton", {
-		LayoutOrder = 2,
-		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
-		TextXAlignment = Enum.TextXAlignment.Center,
-		Text = "B button.",
-	}), React.createElement("textbutton", {
-		LayoutOrder = 3,
-		BackgroundColor3 = Color3.fromRGB(60, 60, 60),
-		TextXAlignment = Enum.TextXAlignment.Center,
-		Text = "C button.",
-	}))
+	table.insert(children, _arg0)
+	return React.createElement("frame", {
+		key = "ToolTipFrame",
+		Position = posOffset,
+		Size = contentSize,
+		BackgroundColor3 = Color3.fromRGB(75, 75, 75),
+		BackgroundTransparency = 0,
+		BorderSizePixel = 0,
+		ZIndex = 0,
+	}, children)
 end
 return {
-	SelectableGroup = SelectableGroup,
+	ToolTipDisplay = ToolTipDisplay,
 }
 ]]></ProtectedString>
-						<string name="ScriptGuid">{D387E543-7BCE-45BC-91FE-86D94BDAD406}</string>
+						<string name="ScriptGuid">{8A526998-1B92-4A8B-95CB-8393E7FACF39}</string>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<bool name="DefinesCapabilities">false</bool>
 						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-						<string name="Name">SelectableGroup</string>
+						<string name="Name">ToolTipDisplay</string>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
-						<UniqueId name="UniqueId">1e3a1ce825d0e5a9093feb1e000029ec</UniqueId>
+						<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029be</UniqueId>
 					</Properties>
 				</Item>
 			</Item>
-			<Item class="ModuleScript" referent="RBXB337E1E1C7484278B78AB34D90A9F893">
+			<Item class="ModuleScript" referent="RBX9D76FC7081D1414E97F367DF50F0F268">
 				<Properties>
 					<Content name="LinkedSource"><null></null></Content>
 					<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
 local React = _react
-local useState = _react.useState
-local function ToolTip(props)
-	local id = if props.id ~= nil then `-{props.id}` else ""
-	local text, setText = useState("")
-	return React.createElement("textlabel", {
-		key = "ToolTip" .. id,
-		Text = text,
+local useMemo = _react.useMemo
+local useSelectableGroup = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useSelectableGroup").useSelectableGroup
+local SelectableGroupContext = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "context", "SelectableGroupContext").SelectableGroupContext
+local function SelectableGroup(_param)
+	local config = _param.config
+	local onSelectionChanged = _param.onSelectionChanged
+	local children = _param.children
+	local _binding = config
+	local isSingleOnly = _binding.isSingleOnly
+	local requireSelection = _binding.requireSelection
+	local _binding_1 = useSelectableGroup({
+		isSingleOnly = isSingleOnly,
+		requireSelection = requireSelection,
 	})
+	local SelectionChanged = _binding_1.SelectionChanged
+	local idAttach = _binding_1.idAttach
+	local selectItem = _binding_1.selectItem
+	local isSelected = _binding_1.isSelected
+	local contextValue = useMemo(function()
+		return {
+			idAttach = idAttach,
+			selectItem = selectItem,
+			isSelected = isSelected,
+		}
+	end, { selectItem, isSelected })
+	return React.createElement(SelectableGroupContext.Provider, {
+		value = contextValue,
+	}, React.createElement("scrollingframe", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = Color3.fromRGB(105, 105, 105),
+		CanvasSize = UDim2.fromScale(0, 0),
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+	}, React.createElement("uilistlayout", {
+		FillDirection = Enum.FillDirection.Horizontal,
+		SortOrder = Enum.SortOrder.LayoutOrder,
+		Padding = UDim.new(0, 5),
+	}), children))
 end
 return {
-	ToolTip = ToolTip,
+	SelectableGroup = SelectableGroup,
 }
 ]]></ProtectedString>
-					<string name="ScriptGuid">{513C938E-B99E-4020-B9C2-286D28D0E56D}</string>
+					<string name="ScriptGuid">{6EE56412-0DB9-4647-A914-6717CC9296F7}</string>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 					<bool name="DefinesCapabilities">false</bool>
 					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-					<string name="Name">ToolTip</string>
+					<string name="Name">SelectableGroup</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
-					<UniqueId name="UniqueId">0ace97b0e0c49523093e9ec400003a29</UniqueId>
+					<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029b3</UniqueId>
 				</Properties>
+			</Item>
+			<Item class="ModuleScript" referent="RBXFDEC130707BE4CC2BAEA485EB0977AC0">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local useRef = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react").useRef
+local _useToolTip = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useToolTip")
+local useToolTip = _useToolTip.useToolTip
+local ToolTipPosition = _useToolTip.ToolTipPosition
+local ToolTipDisplay = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "ToolTipDisplay").ToolTipDisplay
+local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local ToolTipPortal = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "portals", "ToolTipPortal").ToolTipPortal
+local function ToolTipSample()
+	local testBtnRef = useRef()
+	local btnToolTip = useToolTip(testBtnRef, {
+		content = "A tooltip testing description.",
+		delayMs = 0,
+		positioningMode = ToolTipPosition.TargetRelative,
+		anchorPos = Vector2.new(0.5, 0.5),
+	})
+	return React.createElement(React.Fragment, nil, React.createElement("textbutton", {
+		ref = testBtnRef,
+		Text = "A test button",
+		Size = UDim2.fromOffset(200, 200),
+		TextColor3 = Color3.new(1, 1, 1),
+		BackgroundColor3 = Color3.fromRGB(65, 65, 65),
+	}), if btnToolTip then (React.createElement(ToolTipPortal, nil, React.createElement(ToolTipDisplay, {
+		data = btnToolTip,
+	}))) else (React.createElement(React.Fragment)))
+end
+return {
+	ToolTipSample = ToolTipSample,
+}
+]]></ProtectedString>
+					<string name="ScriptGuid">{278EBE7D-6744-4350-B72B-C5FCC0639324}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">SampleToolTip</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029b5</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="Folder" referent="RBX8FD36458B7BC40BEB37D83813B3C1C98">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">context</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029bb</UniqueId>
+				</Properties>
+				<Item class="ModuleScript" referent="RBXAEA42C6180484C9780005DBB59B453C6">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local createContext = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react").createContext
+local SelectableGroupContext = createContext({
+	selectItem = function() end,
+	isSelected = function()
+		return false
+	end,
+	idAttach = function() end,
+})
+return {
+	SelectableGroupContext = SelectableGroupContext,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{BF35266B-2D94-4278-AD71-69F087D2A00C}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">SelectableGroupContext</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029bc</UniqueId>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="Folder" referent="RBX3CE918B90E1444D6B78177DAB854ABD4">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">misc</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">1cf50d17d59460f40942fc2700002a89</UniqueId>
+				</Properties>
+				<Item class="ModuleScript" referent="RBXB4272B69E61F4EF1B5EE4711FF6C9316">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local Players = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").Players
+local TOOLTIP_ROOT_NAME = "ROOT_TOOLTIP"
+local function getOrCreateRootUI()
+	local _playerGui = Players.LocalPlayer
+	if _playerGui ~= nil then
+		_playerGui = _playerGui:WaitForChild("PlayerGui")
+	end
+	local playerGui = _playerGui
+	if not playerGui then
+		error(error("Cannot find PlayerGui for the local player."))
+	end
+	local rootUI = playerGui:FindFirstChild(TOOLTIP_ROOT_NAME)
+	if rootUI and rootUI:IsA("ScreenGui") then
+		return rootUI
+	end
+	rootUI = Instance.new("ScreenGui")
+	rootUI.Name = TOOLTIP_ROOT_NAME
+	rootUI.ResetOnSpawn = false
+	rootUI.ZIndexBehavior = Enum.ZIndexBehavior.Global
+	rootUI.DisplayOrder = 1000
+	rootUI.Parent = playerGui
+	return rootUI
+end
+local ToolTipRoot = getOrCreateRootUI()
+return {
+	ToolTipRoot = ToolTipRoot,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{A82147FF-0EE5-4DC3-B91B-176F63970E23}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">ToolTipRoot</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">1cf50d17d59460f40942fc2700002a8a</UniqueId>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="Folder" referent="RBXAD7D1812A7F64FEF8E81D9907BDAD231">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">portals</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">1cf50d17d59460f40942fc2700002a8c</UniqueId>
+				</Properties>
+				<Item class="ModuleScript" referent="RBXE362ECF9A59A4C76A02A8C192D1B0EEE">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local createPortal = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react-roblox").createPortal
+local ToolTipRoot = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "misc", "ToolTipRoot").ToolTipRoot
+local function ToolTipPortal(_param)
+	local children = _param.children
+	return createPortal(children, ToolTipRoot)
+end
+return {
+	ToolTipPortal = ToolTipPortal,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{64253BD8-C73A-4B2A-B458-12AFC68D007D}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">ToolTipPortal</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">1cf50d17d59460f40942fc2700002a8d</UniqueId>
+					</Properties>
+				</Item>
 			</Item>
 		</Item>
 	</Item>
