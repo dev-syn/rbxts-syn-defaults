@@ -11,7 +11,7 @@ export function ToolTipSample() {
 		content: "A tooltip testing description.",
 		delayMs: 0,
 		positioningMode: ToolTipPosition.TargetRelative,
-		anchorPos: new Vector2(0.5,0.5)
+		anchorPos: new Vector2(0.5,0)
 	});
 
 	return (
