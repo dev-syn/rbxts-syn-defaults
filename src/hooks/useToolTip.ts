@@ -50,7 +50,7 @@ export function useToolTip(
 	const updateToolTipState = () => {
 		const anchorPos = config.anchorPos !== undefined
 		? config.anchorPos : DEFAULT_ANCHOR;
-
+		
 		// Top-left is how the underlying ToolTips element is positioned
 		let xPos = bounds.C1.X + anchorPos.X * bounds.Size.X, yPos = bounds.C1.Y + anchorPos.Y * bounds.Size.Y;
 		const pos = new Vector2(xPos,yPos);
