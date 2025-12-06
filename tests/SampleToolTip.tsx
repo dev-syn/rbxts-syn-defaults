@@ -3,16 +3,29 @@ import { useToolTip, ToolTipPosition } from './hooks/useToolTip';
 import { ToolTipDisplay } from './components/ToolTipDisplay';
 import React from '@rbxts/react';
 import { ToolTipPortal } from './portals/ToolTipPortal';
+import { CalculateContentProps } from './helpers/calculateContentSize';
 
-export function ToolTipSample() {
+const DEFAULT_TOOLTIP_PROPS: Omit<CalculateContentProps,'text'> = {
+	textSize: 18,
+	font: Enum.Font.Gotham,
+	richText: false
+};
+
+interface ToolTipSampleProps {
+	calculateProps?: Omit<CalculateContentProps,'text'>
+}
+
+export function ToolTipSample({ calculateProps }: ToolTipSampleProps) {
 	const testBtnRef = useRef<TextButton>();
+
+	const _calculateProps = calculateProps ?? DEFAULT_TOOLTIP_PROPS;
 
 	const btnToolTip = useToolTip(testBtnRef,{
 		content: "A tooltip testing description.",
 		delayMs: 0,
-		positioningMode: ToolTipPosition.TargetRelative,
-		anchorPos: new Vector2(0.5,0)
-	});
+		positioningMode: ToolTipPosition.MouseBased,
+		anchorPos: new Vector2(0.5,1.25)
+	},_calculateProps);
 
 	return (
 		<>
@@ -28,6 +41,7 @@ export function ToolTipSample() {
 				<ToolTipPortal>
 					<ToolTipDisplay
 						data={btnToolTip}
+						calculateContentProps={_calculateProps}
 					/>
 				</ToolTipPortal>
 			) : (
