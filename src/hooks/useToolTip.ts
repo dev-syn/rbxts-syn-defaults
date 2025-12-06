@@ -3,8 +3,6 @@ import { BoundCheckOptions, useBoundCheck } from './useBoundCheck';
 import { GuiService, RunService, UserInputService } from '@rbxts/services';
 import { calculateContentSize, CalculateContentProps } from '../helpers/calculateContentSize';
 
-const DEFAULT_ANCHOR = new Vector2(0,0);
-
 interface ToolTipPosition {
 	TargetRelative: "TargetRelative",
 	MouseBased: "MouseBased"
