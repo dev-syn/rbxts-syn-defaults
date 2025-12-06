@@ -29,7 +29,7 @@ interface BoundsLayout {
 	 * The last charted position of the mouse.
 	 * (Note: This mouse position has been adjusted to reflect the GuiInset.)
 	 */
-	LastChartedPos: Vector2 | undefined;
+	LastChartedMousePos: Vector2 | undefined;
 }
 
 const EmptyBoundsLayout: BoundsLayout = {
@@ -38,7 +38,7 @@ const EmptyBoundsLayout: BoundsLayout = {
 	C3: { X: 0,Y: 0 },
 	C4: { X: 0,Y: 0 },
 	Size: { X: 0,Y: 0 },
-	LastChartedPos: undefined
+	LastChartedMousePos: undefined
 };
 
 export function useBoundCheck(
@@ -132,7 +132,7 @@ export function useBoundCheck(
 					C4: { X: rightAbsX,Y: bottomAbsY},
 					// Bound Size
 					Size: { X: absXSize, Y: absYSize },
-					LastChartedPos: adjustedMousePos
+					LastChartedMousePos: adjustedMousePos
 				});
 
 				boundEnterRef.current.Fire();
@@ -148,7 +148,10 @@ export function useBoundCheck(
 	},[
 		topMostOnly,
 		considerVisibility,
-		instRef.current
+		instRef.current,
+		instRef.current?.AbsoluteSize,
+		instRef.current?.AbsolutePosition,
+		instRef.current?.AbsoluteRotation
 	]);
 
 	useEffect((() => {
@@ -166,7 +169,7 @@ export function useBoundCheck(
 			boundEnterRef.current.Destroy();
 			boundExitRef.current.Destroy();
 		}
-	}),[queryBounds, instRef]);
+	}),[queryBounds,instRef.current]);
 
 	return {
 		withinBounds,
