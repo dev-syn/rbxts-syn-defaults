@@ -1,21 +1,21 @@
 import { TextService } from '@rbxts/services';
 
-export interface TextProps {
+export interface CalculateContentProps {
 	text: string;
 	textSize: number;
 	font: Font | Enum.Font;
 	richText?: boolean;
 }
 
-function isFontObject(val: unknown): val is Font {
-	return val instanceof Font;
+export function isFontObject(val: unknown): val is Font {
+	return typeIs(val,"Font");
 }
 
 /** Calculates how much a font with a size would take up.
  * You can provide a Enum.Font or a Font object itself.
  * NOTE: When providing a Font object this method can yield especially when the Font is not already loaded.
  */
-export function calculateContentSize(props: TextProps,bounds: Vector2): Vector2 {
+export function calculateContentSize(props: CalculateContentProps,bounds: Vector2): Vector2 {
 	if (!props.font) return new Vector2(0,0);
 
 	if (isFontObject(props.font)) {
