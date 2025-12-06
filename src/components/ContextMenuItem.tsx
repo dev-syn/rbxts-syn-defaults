@@ -1,9 +1,17 @@
-import React from '@rbxts/react';
+import React, { useContext } from '@rbxts/react';
+import { ContextMenuContext } from '../context/ContextMenuContext';
 
 export type ContextItemData = string;
 
-export function ContextMenuItem() {
+interface ContextItemProps {
+	id: string | number;
+}
+
+export function ContextMenuItem({ id }: ContextItemProps) {
+	const { registerItemId,unregisterItemId } = useContext(ContextMenuContext);
 	return (
-		
+		<textlabel
+
+		/>
 	);
 }
