@@ -3,7 +3,8 @@ import { CloseBtn } from './CloseBtn';
 import { SelectableGroup } from './SelectableGroup';
 import { SelectableItem } from './components/SelectableItem';
 import Object from '@rbxts/object-utils';
-import { ToolTipSample } from './SampleToolTip';
+import { SampleToolTip } from './SampleToolTip';
+import { SampleContextMenu } from './SampleContextMenu';
 
 export const App = () => {
 	
@@ -53,7 +54,9 @@ export const App = () => {
 				/>
 				</SelectableGroup>
 
-				<ToolTipSample/>
+				<SampleToolTip/>
+
+				<SampleContextMenu/>
 
 			</scrollingframe>
 		</screengui>
