@@ -22,7 +22,8 @@
 
 				"App": { "$path": "../out/tests/App.luau" },
 				"SelectableGroup": { "$path": "../out/tests/SelectableGroup.luau" },
-				"SampleToolTip": { "$path": "../out/tests/SampleToolTip.luau" }
+				"SampleToolTip": { "$path": "../out/tests/SampleToolTip.luau" },
+				"SampleContextMenu": { "$path": "../out/tests/SampleContextMenu.luau" }
 			}
 		},
 		"StarterPlayer": {
