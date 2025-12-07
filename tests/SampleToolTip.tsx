@@ -15,7 +15,7 @@ interface ToolTipSampleProps {
 	calculateProps?: Omit<CalculateContentProps,'text'>
 }
 
-export function ToolTipSample({ calculateProps }: ToolTipSampleProps) {
+export function SampleToolTip({ calculateProps }: ToolTipSampleProps) {
 	const testBtnRef = useRef<TextButton>();
 
 	const _calculateProps = calculateProps ?? DEFAULT_TOOLTIP_PROPS;
