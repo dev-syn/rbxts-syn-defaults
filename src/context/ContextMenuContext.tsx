@@ -1,13 +1,24 @@
 import React from '@rbxts/react';
 
+export type ContextItemID = string | number;
 export interface ContextRegistration {
-	registerItemId: (id: string | number) => void;
-	unregisterItemId: (id: string | number) => void;
-	getLayoutOrder: (id: string | number) => number;
+	registerItemId: (id: ContextItemID) => void;
+	unregisterItemId: (id: ContextItemID) => void;
+
+	registerAction?: (id: ContextItemID,cb: (...args: unknown[]) => void) => void;
+	unregisterAction?: (id: ContextItemID) => void;
+	performAction?: (id: ContextItemID,...args: unknown[]) => void;
+
+	getLayoutOrder?: (id: ContextItemID) => number;
 }
 
 export const ContextMenuContext = React.createContext<ContextRegistration>({
 	registerItemId: () => {},
 	unregisterItemId: () => {},
-	getLayoutOrder: () => 0
+
+	registerAction: () => {},
+	unregisterAction: () => {},
+	performAction: () => {},
+	
+	getLayoutOrder: () => 0,
 });
