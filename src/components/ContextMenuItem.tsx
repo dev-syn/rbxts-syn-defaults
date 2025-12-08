@@ -3,7 +3,7 @@ import { ContextMenuContext } from '../context/ContextMenuContext';
 
 export type ContextItemData = string;
 
-interface ContextItemProps extends Partial<React.ComponentPropsWithoutRef<'textlabel'>>{
+interface ContextItemProps extends Partial<React.ComponentPropsWithoutRef<'textbutton'>>{
 	id: string | number;
 	text: string;
 }
@@ -26,7 +26,7 @@ export function ContextMenuItem(props: ContextItemProps) {
 	const layoutOrder = getLayoutOrder ? getLayoutOrder(id) : 0;
 
 	return (
-		<textlabel
+		<textbutton
 			{...nativeProps}
 			LayoutOrder={layoutOrder}
 			Size={new UDim2(1,0,0,30)}
