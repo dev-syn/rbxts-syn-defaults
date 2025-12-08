@@ -10,12 +10,17 @@ export interface ContextMenuConfig {
 	activateAnywhere: boolean;
 }
 
+interface ContextMenuProps {
+	menuId: string;
+	config: ContextMenuConfig;
+}
+
 interface ContextMenuReturn {
 	itemIds: Array<string | number>;
 	contextVal: ContextRegistration;
 }
 
-export function useContextMenu(config: ContextMenuConfig): ContextMenuReturn {
+export function useContextMenu({ config,menuId }: ContextMenuProps): ContextMenuReturn {
 	const [itemIds,setItemIds] = useState<Array<string | number>>([]);
 
 	const registerItemId = useCallback((id: string | number) => {
