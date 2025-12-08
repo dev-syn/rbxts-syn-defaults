@@ -7,11 +7,12 @@ export interface ContextMenuProps extends PropsWithChildren {
 }
 
 export function ContextMenu({ menuId,children }: ContextMenuProps) {
-	const { contextVal, itemIds } = useContextMenu({ activateAnywhere: false });
+	const { contextVal, itemIds } = useContextMenu({ menuId: menuId,config: { activateAnywhere: false } });
 	
 	return (
 		<ContextMenuContext.Provider value={contextVal}>
 			<scrollingframe
+				key={`ContextMenu-${menuId}`}
 				Size={UDim2.fromOffset(400,400)}
 				CanvasSize={new UDim2(0,0,0,0)}
 				AutomaticCanvasSize={Enum.AutomaticSize.Y}
