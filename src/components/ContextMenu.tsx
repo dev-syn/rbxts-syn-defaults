@@ -13,6 +13,7 @@ export function ContextMenu({ menuId,children }: ContextMenuProps) {
 		<ContextMenuContext.Provider value={contextVal}>
 			<scrollingframe
 				Size={UDim2.fromOffset(400,400)}
+				CanvasSize={new UDim2(0,0,0,0)}
 				AutomaticCanvasSize={Enum.AutomaticSize.Y}
 				ScrollingDirection={Enum.ScrollingDirection.Y}
 			>
