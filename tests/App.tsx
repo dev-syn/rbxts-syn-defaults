@@ -1,8 +1,7 @@
-import React, { useRef } from '@rbxts/react';
+import React from '@rbxts/react';
 import { CloseBtn } from './CloseBtn';
 import { SelectableGroup } from './SelectableGroup';
 import { SelectableItem } from './components/SelectableItem';
-import Object from '@rbxts/object-utils';
 import { SampleToolTip } from './SampleToolTip';
 import { SampleContextMenu } from './SampleContextMenu';
 
