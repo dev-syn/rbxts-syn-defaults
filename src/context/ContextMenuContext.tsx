@@ -9,6 +9,9 @@ export interface ContextRegistration {
 	unregisterAction?: (id: ContextItemID) => void;
 	performAction?: (id: ContextItemID,...args: unknown[]) => void;
 
+	registerTriggerRef?: (id: ContextItemID,node: GuiObject) => void;
+	unregisterTriggerRef?: (id: ContextItemID) => void;
+
 	getLayoutOrder?: (id: ContextItemID) => number;
 }
 
@@ -19,6 +22,9 @@ export const ContextMenuContext = React.createContext<ContextRegistration>({
 	registerAction: () => {},
 	unregisterAction: () => {},
 	performAction: () => {},
+
+	registerTriggerRef: () => {},
+	unregisterTriggerRef: () => {},
 	
 	getLayoutOrder: () => 0,
 });

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from '@rbxts/react';
+import React, { useCallback, useContext, useEffect } from '@rbxts/react';
 import { ContextMenuContext } from '../context/ContextMenuContext';
 
 export type ContextItemData = string;
@@ -14,6 +14,8 @@ export function ContextMenuItem(props: ContextItemProps) {
 	const {
 		registerItemId,unregisterItemId,
 		registerAction, unregisterAction, performAction,
+		registerTriggerRef,
+		unregisterTriggerRef,
 		getLayoutOrder
 	} = useContext(ContextMenuContext);
 
@@ -40,6 +42,14 @@ export function ContextMenuItem(props: ContextItemProps) {
 		else if (props.onActivate) props.onActivate();
 	},[id,performAction,props.onActivate]);
 
+	const triggerRef = useCallback(
+		(node: TextButton | undefined) => {
+			if (node) registerTriggerRef?.(id,node as GuiObject);
+			else unregisterTriggerRef?.(id);
+		},
+		[id,registerTriggerRef,unregisterTriggerRef]
+	);
+
 	const nativeProps = { ...props } as Record<string,unknown>;
 	delete nativeProps.id;
 	delete nativeProps.text;
@@ -50,11 +60,11 @@ export function ContextMenuItem(props: ContextItemProps) {
 
 	return (
 		<textbutton
+			ref={triggerRef}
 			{...nativeProps}
 			LayoutOrder={layoutOrder}
 			Size={new UDim2(1,0,0,30)}
 			Text={`{Item: ${id}} - ${text}`}
-
 			Event={{ MouseButton1Click: handleClick }}
 		/>
 	);
