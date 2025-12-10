@@ -1,5 +1,5 @@
 import React from '@rbxts/react';
-import { CloseBtn } from './CloseBtn';
+import { CloseBtn } from './components/CloseBtn';
 import { SelectableGroup } from './SelectableGroup';
 import { SelectableItem } from './components/SelectableItem';
 import { SampleToolTip } from './SampleToolTip';
