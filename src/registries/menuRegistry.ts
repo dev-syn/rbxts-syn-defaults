@@ -1,4 +1,4 @@
-type OpenHandler = (menuId: string,pos: Vector2,node?: GuiObject) => void;
+type OpenHandler = (menuId: string,node?: GuiObject) => void;
 
 const triggers = new Map<string,Set<GuiObject>>();
 const conns = new Map<GuiObject,RBXScriptConnection>();
@@ -31,8 +31,8 @@ export function registerTrigger(menuId: string,node?: GuiObject) {
 		const conn = (node.InputBegan as RBXScriptSignal<(i: InputObject,p: boolean) => void>).Connect((input: InputObject,processed: boolean) => {
 			if (processed) return;
 			if (input.UserInputType === Enum.UserInputType.MouseButton2) {
-				const pos = (input as unknown as { Position?: Vector2 }).Position ?? new Vector2(0,0);
-				openHandlers.get(menuId)?.(menuId,pos,node);
+				
+				openHandlers.get(menuId)?.(menuId,node);
 			}
 		});
 		conns.set(node,conn);
@@ -63,7 +63,7 @@ export function unregisterTrigger(menuId: string, node?: GuiObject) {
   }
 }
 
-export function onOpen(menuId: string, handler?: OpenHandler) {
+export function onOpenContextMenu(menuId: string, handler?: OpenHandler) {
   if (handler) openHandlers.set(menuId, handler);
   else openHandlers.delete(menuId);
 }
