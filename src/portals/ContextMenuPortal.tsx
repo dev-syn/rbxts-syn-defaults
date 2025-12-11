@@ -19,8 +19,8 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 	const listLayoutRef = useRef<UIListLayout>();
 
 	useEffect(() => {
-		print(`Ref current: ${ref.current}, triggerNode: ${triggerNode}`);
 		if (!ref.current || !triggerNode) return;
+		print(`Ref current: ${ref.current}, triggerNode: ${triggerNode}`);
 
 		const menuSize = ref.current.AbsoluteSize;
 		const viewportSize = game.Workspace.CurrentCamera!.ViewportSize;
@@ -39,7 +39,7 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 		const yOffset = isSizeOverHalfY ? topAbsPosY - menuSize.Y : topAbsPosY;
 
 		setPosition(UDim2.fromOffset(xOffset,yOffset));
-	},[listLayoutRef,listLayoutRef.current?.AbsoluteContentSize,triggerNode,size]);
+	},[listLayoutRef,listLayoutRef.current?.AbsoluteContentSize,triggerNode,triggerNode?.AbsolutePosition,size]);
 
 	useEffect(() => {
 		if (!listLayoutRef.current) return;
