@@ -74103,6 +74103,7 @@ local App = function()
 		FillDirection = Enum.FillDirection.Horizontal,
 		CellPadding = UDim2.fromScale(0.025, 0),
 		FillDirectionMaxCells = 4,
+		SortOrder = Enum.SortOrder.LayoutOrder,
 	}), React.createElement(CloseBtn, {
 		size = UDim2.fromOffset(200, 200),
 		onClose = function() end,
@@ -74442,17 +74443,15 @@ local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_in
 local React = _react
 local useCallback = _react.useCallback
 local useEffect = _react.useEffect
-local useRef = _react.useRef
 local useState = _react.useState
 local ContextMenuContext = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "context", "ContextMenuContext").ContextMenuContext
 local useContextMenu = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useContextMenu").useContextMenu
 local onOpenContextMenu = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "registries", "menuRegistry").onOpenContextMenu
 local ContextMenuPortal = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "portals", "ContextMenuPortal").ContextMenuPortal
-local function ContextMenu(_param)
-	local menuId = _param.menuId
-	local children = _param.children
+local function ContextMenu(props)
+	local menuId = props.menuId
+	local children = props.children
 	local open, setOpen = useState(false)
-	local pos, setPos = useState(UDim2.new(0, 0, 0, 0))
 	local activeTrigger, setActiveTrigger = useState(nil)
 	local _binding = useContextMenu({
 		menuId = menuId,
@@ -74462,49 +74461,41 @@ local function ContextMenu(_param)
 	})
 	local contextVal = _binding.contextVal
 	local itemIds = _binding.itemIds
-	local menuRef = useRef()
 	local handleMenuOpen = useCallback(function(menuId, node)
-		if not menuRef.current then
-			print("No ref")
-			return nil
-		end
-		local contextMenu = menuRef.current
 		if open then
 			print(`Closing context menu: {menuId}`)
 			setOpen(false)
+			setActiveTrigger(nil)
 			return nil
 		end
 		if node then
-			local viewportSize = game.Workspace.CurrentCamera.ViewportSize
-			local absSizeY = node.AbsoluteSize.Y
-			local absPosY = node.AbsolutePosition.Y
-			local yAnchor = node.AnchorPoint.Y
-			local topAbsPosY = math.ceil(absPosY - absSizeY * yAnchor)
-			local leftAbsPosX = node.AbsolutePosition.X - math.ceil(node.AbsoluteSize.X * node.AnchorPoint.X)
-			local rightAbsPosX = leftAbsPosX + contextMenu.AbsoluteSize.X
-			-- Position the menu before open
-			local isSizeOverHalfX = leftAbsPosX > viewportSize.X / 2
-			local isSizeOverHalfY = absPosY > viewportSize.Y / 2
-			local xOffset = if isSizeOverHalfX then leftAbsPosX - contextMenu.AbsoluteSize.X else rightAbsPosX + (node.AbsoluteSize.X - contextMenu.AbsoluteSize.X)
-			local yOffset = if isSizeOverHalfY then (topAbsPosY + -(contextMenu.AbsoluteSize.Y - math.ceil(1 / viewportSize.Y) * contextMenu.AbsoluteSize.Y)) else topAbsPosY
-			setPos(UDim2.fromOffset(xOffset, yOffset))
+			setActiveTrigger(node)
 		end
 		print(`Opening context menu: {menuId}`)
 		setOpen(true)
-	end, { open, pos })
+	end, { open })
 	useEffect(function()
 		onOpenContextMenu(menuId, handleMenuOpen)
 		return function()
 			return onOpenContextMenu(menuId, nil)
 		end
 	end, { menuId, handleMenuOpen })
+	local _object = table.clone(props)
+	setmetatable(_object, nil)
+	local nativeProps = _object
+	nativeProps.menuId = nil
+	nativeProps.children = nil
+	local _condition = open
+	if _condition then
+		local _attributes = table.clone(nativeProps)
+		setmetatable(_attributes, nil)
+		_attributes.key = `ContextMenu-{menuId}`
+		_attributes.triggerNode = activeTrigger
+		_condition = React.createElement(ContextMenuPortal, _attributes, children)
+	end
 	return React.createElement(ContextMenuContext.Provider, {
 		value = contextVal,
-	}, open and React.createElement(ContextMenuPortal, {
-		menuRef = menuRef,
-		key = `ContextMenu-{menuId}`,
-		position = pos,
-	}, children))
+	}, _condition)
 end
 return {
 	ContextMenu = ContextMenu,
@@ -74969,21 +74960,72 @@ return {
 						<Content name="LinkedSource"><null></null></Content>
 						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local useEffect = _react.useEffect
+local useRef = _react.useRef
+local useState = _react.useState
 local createPortal = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react-roblox").createPortal
 local ContextMenuRoot = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "misc", "ContextMenuRoot").ContextMenuRoot
 local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
-local function ContextMenuPortal(_param)
-	local position = _param.position
-	local menuRef = _param.menuRef
-	local children = _param.children
-	return createPortal(React.createElement("scrollingframe", {
-		ref = menuRef,
-		Position = UDim2.fromOffset(position.X.Offset, position.Y.Offset),
-		Size = UDim2.fromOffset(400, 400),
-		CanvasSize = UDim2.new(0, 0, 0, 0),
-		AutomaticCanvasSize = Enum.AutomaticSize.Y,
-		ScrollingDirection = Enum.ScrollingDirection.Y,
-	}, children, React.createElement("uilistlayout", {
+local function ContextMenuPortal(props)
+	local triggerNode = props.triggerNode
+	local children = props.children
+	local ref = useRef(nil)
+	local position, setPosition = useState(UDim2.new(0, 0, 0, 0))
+	local size, setSize = useState(UDim2.new(0, 250, 0, 300))
+	local listLayoutRef = useRef()
+	local _exp = function()
+		print(`Ref current: {ref.current}, triggerNode: {triggerNode}`)
+		if not ref.current or not triggerNode then
+			return nil
+		end
+		local menuSize = ref.current.AbsoluteSize
+		local viewportSize = game.Workspace.CurrentCamera.ViewportSize
+		local absSizeY = triggerNode.AbsoluteSize.Y
+		local absPosY = triggerNode.AbsolutePosition.Y
+		local yAnchor = triggerNode.AnchorPoint.Y
+		local topAbsPosY = math.ceil(absPosY - absSizeY * yAnchor)
+		local leftAbsPosX = triggerNode.AbsolutePosition.X - math.ceil(triggerNode.AbsoluteSize.X * triggerNode.AnchorPoint.X)
+		local isSizeOverHalfX = leftAbsPosX > viewportSize.X / 2
+		local isSizeOverHalfY = absPosY > viewportSize.Y / 2
+		local xOffset = if isSizeOverHalfX then leftAbsPosX - menuSize.X else leftAbsPosX + triggerNode.AbsoluteSize.X
+		local yOffset = if isSizeOverHalfY then topAbsPosY - menuSize.Y else topAbsPosY
+		setPosition(UDim2.fromOffset(xOffset, yOffset))
+	end
+	local _result = listLayoutRef.current
+	if _result ~= nil then
+		_result = _result.AbsoluteContentSize
+	end
+	useEffect(_exp, { listLayoutRef, _result, triggerNode, size })
+	local _exp_1 = function()
+		if not listLayoutRef.current then
+			return nil
+		end
+		local absSize = listLayoutRef.current.AbsoluteContentSize
+		setSize(UDim2.fromOffset(absSize.X, absSize.Y))
+	end
+	local _result_1 = listLayoutRef.current
+	if _result_1 ~= nil then
+		_result_1 = _result_1.AbsoluteContentSize
+	end
+	useEffect(_exp_1, { listLayoutRef, _result_1, triggerNode, position })
+	local _object = table.clone(props)
+	setmetatable(_object, nil)
+	local nativeProps = _object
+	nativeProps.triggerNode = nil
+	local _attributes = {
+		ref = ref,
+	}
+	for _k, _v in nativeProps do
+		_attributes[_k] = _v
+	end
+	_attributes.Position = UDim2.fromOffset(position.X.Offset, position.Y.Offset)
+	_attributes.Size = UDim2.fromOffset(size.X.Offset, size.Y.Offset)
+	_attributes.CanvasSize = UDim2.new(0, 0, 0, 0)
+	_attributes.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	_attributes.ScrollingDirection = Enum.ScrollingDirection.Y
+	return createPortal(React.createElement("scrollingframe", _attributes, children, React.createElement("uilistlayout", {
+		ref = listLayoutRef,
 		FillDirection = Enum.FillDirection.Vertical,
 		SortOrder = Enum.SortOrder.LayoutOrder,
 	})), ContextMenuRoot)
@@ -75158,6 +75200,7 @@ local function SampleContextMenu()
 	return React.createElement(React.Fragment, nil, React.createElement(ContextMenuTriggerBtn, {
 		menuId = CONTEXT_MENU_ID,
 		Text = "Right-click me to open the context menu.",
+		LayoutOrder = 4,
 	}), React.createElement(ContextMenu, {
 		menuId = CONTEXT_MENU_ID,
 	}, React.createElement(ContextMenuItem, {
