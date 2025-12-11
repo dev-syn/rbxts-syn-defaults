@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from '@rbxts/react';
-import { ContextMenuContext } from '../context/ContextMenuContext';
+import * as menuRegistry from '../registries/menuRegistry';
 
 interface TriggerBtnProps extends Partial<
 	React.ComponentPropsWithoutRef<'textbutton'>>
@@ -8,15 +8,12 @@ interface TriggerBtnProps extends Partial<
 }
 
 export function ContextMenuTriggerBtn(props: TriggerBtnProps) {
-	const { registerTriggerRef, unregisterTriggerRef } =
-		useContext(ContextMenuContext);
-
 	const menuId = props.menuId;
 
 	const ref = useCallback((node: TextButton | undefined) => {
-		if (node) registerTriggerRef?.(menuId, node as GuiObject);
-		else unregisterTriggerRef?.(menuId);
-	},[menuId, registerTriggerRef, unregisterTriggerRef]);
+		if (node) menuRegistry.registerTrigger(menuId, node as GuiObject);
+		else menuRegistry.unregisterTrigger(menuId);
+	},[menuId]);
 
 	const native = { ...props } as Record<string,unknown>;
 	delete native.menuId;
