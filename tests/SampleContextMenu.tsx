@@ -8,7 +8,11 @@ export function SampleContextMenu() {
 
 	return (
 		<>
-			<ContextMenuTriggerBtn menuId={CONTEXT_MENU_ID} Text="Right-click me to open the context menu."/>
+			<ContextMenuTriggerBtn
+				menuId={CONTEXT_MENU_ID}
+				Text="Right-click me to open the context menu."
+				LayoutOrder={4}
+			/>
 			<ContextMenu
 				menuId={CONTEXT_MENU_ID}
 			>
