@@ -41,7 +41,7 @@ export function SelectableItem(props: SelectableItemProps) {
 	},[props.id,selectItem]);
 
 	const eventProps = {
-		MouseButton1Click: handleClick
+		Activated: handleClick
 	};
 
 	const nativeProps = {...props} as Record<string,unknown>;

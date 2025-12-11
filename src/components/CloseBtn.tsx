@@ -77,7 +77,7 @@ export function CloseBtn(btnProps: CloseBtnProps) {
 				ScaleType={Enum.ScaleType.Fit}
 				AutoButtonColor={false}
 				Event={{
-					MouseButton1Click: () => {
+					Activated: () => {
 						// Hide the CloseBtn
 						if (containerRef.current) containerRef.current.Visible = false;
 						btnProps.onClose();

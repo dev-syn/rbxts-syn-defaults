@@ -54,7 +54,7 @@ export function ContextMenuItem(props: ContextItemProps) {
 			LayoutOrder={layoutOrder}
 			Size={new UDim2(1,0,0,30)}
 			Text={`{Item: ${id}} - ${text}`}
-			Event={{ MouseButton1Click: handleClick }}
+			Event={{ Activated: handleClick }}
 		/>
 	);
 }
