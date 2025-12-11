@@ -73400,11 +73400,32 @@ local exports = {}
 for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useBoundCheck") or {} do
 	exports[_k] = _v
 end
+for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useContextMenu") or {} do
+	exports[_k] = _v
+end
 for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useSelectableGroup") or {} do
 	exports[_k] = _v
 end
+for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useToolTip") or {} do
+	exports[_k] = _v
+end
 -- Components
-for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "CloseBtn") or {} do
+for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "CloseBtn") or {} do
+	exports[_k] = _v
+end
+for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "ContextMenu") or {} do
+	exports[_k] = _v
+end
+for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "ContextMenuItem") or {} do
+	exports[_k] = _v
+end
+for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "ContextMenuTriggerBtn") or {} do
+	exports[_k] = _v
+end
+for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "SelectableItem") or {} do
+	exports[_k] = _v
+end
+for _k, _v in TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "ToolTipDisplay") or {} do
 	exports[_k] = _v
 end
 return exports
@@ -73419,112 +73440,6 @@ return exports
 				<BinaryString name="Tags"></BinaryString>
 				<UniqueId name="UniqueId">107f3cf6ea35673b0933809f0000052e</UniqueId>
 			</Properties>
-			<Item class="ModuleScript" referent="403">
-				<Properties>
-					<Content name="LinkedSource"><null></null></Content>
-					<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
-local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
-local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
-local React = _react
-local useMemo = _react.useMemo
-local useRef = _react.useRef
-local TweenService = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").TweenService
-local DEFAULT_CLOSE = "http://www.roblox.com/asset/?id=6031094678"
-local DEFAULT_SIZE = UDim2.new(0.1, 0, 0.1, 0)
-local DEFAULT_BTN_COLOR = Color3.fromRGB(215, 0, 0)
-local TWEEN_INFO = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-local function CloseBtn(btnProps)
-	local _condition = btnProps.btnContent
-	if _condition == nil then
-		_condition = DEFAULT_CLOSE
-	end
-	local btnContent = _condition
-	local btnSize = btnProps.size or DEFAULT_SIZE
-	local btnColor = btnProps.btnColor or DEFAULT_BTN_COLOR
-	local bgColor = btnProps.bgColor or Color3.new(1, 1, 1)
-	local containerRef = useRef()
-	local shaderRef = useRef()
-	local btnRef = useRef()
-	-- Calculate contrast
-	local shaderColor = useMemo(function()
-		local lum = bgColor.R * 0.299 + bgColor.G * 0.587 + bgColor.B * 0.114
-		return if lum > 0.5 then Color3.new(0, 0, 0) else Color3.new(1, 1, 1)
-	end, { bgColor })
-	local setShaderOpacity = function(transparency)
-		if shaderRef.current then
-			TweenService:Create(shaderRef.current, TWEEN_INFO, {
-				BackgroundTransparency = transparency,
-			}):Play()
-		end
-	end
-	return React.createElement("frame", {
-		key = "CloseBtnContainer",
-		ref = containerRef,
-		Size = btnSize,
-		BackgroundTransparency = 1,
-		ClipsDescendants = true,
-		BorderSizePixel = 0,
-	}, React.createElement("uiaspectratioconstraint", {
-		key = "UIAspectRatioConstraint",
-		AspectRatio = 1,
-		AspectType = Enum.AspectType.FitWithinMaxSize,
-		DominantAxis = Enum.DominantAxis.Height,
-	}), React.createElement("frame", {
-		key = "Shader",
-		ref = shaderRef,
-		ZIndex = 2,
-		Size = UDim2.fromScale(1, 1),
-		BackgroundColor3 = shaderColor,
-		BackgroundTransparency = 1,
-		BorderSizePixel = 0,
-		Active = false,
-	}), React.createElement("imagebutton", {
-		key = "CloseBtn",
-		ref = btnRef,
-		ZIndex = 1,
-		Size = UDim2.fromScale(1, 1),
-		Image = btnContent,
-		ImageColor3 = btnColor,
-		ScaleType = Enum.ScaleType.Fit,
-		AutoButtonColor = false,
-		Event = {
-			MouseButton1Click = function()
-				-- Hide the CloseBtn
-				if containerRef.current then
-					containerRef.current.Visible = false
-				end
-				btnProps.onClose()
-			end,
-			MouseEnter = function()
-				return setShaderOpacity(0.85)
-			end,
-			MouseLeave = function()
-				return setShaderOpacity(1)
-			end,
-			MouseButton1Down = function()
-				return setShaderOpacity(0.7)
-			end,
-			MouseButton1Up = function()
-				return setShaderOpacity(0.85)
-			end,
-		},
-	}))
-end
-return {
-	CloseBtn = CloseBtn,
-}
-]]></ProtectedString>
-					<string name="ScriptGuid">{15C4AAD2-0155-49C9-B5F4-4D4CC90931CE}</string>
-					<BinaryString name="AttributesSerialize"></BinaryString>
-					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
-					<bool name="DefinesCapabilities">false</bool>
-					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-					<string name="Name">CloseBtn</string>
-					<int64 name="SourceAssetId">-1</int64>
-					<BinaryString name="Tags"></BinaryString>
-					<UniqueId name="UniqueId">107f3cf6ea35673b0933809f0000052f</UniqueId>
-				</Properties>
-			</Item>
 			<Item class="Folder" referent="404">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
@@ -73574,7 +73489,7 @@ local EmptyBoundsLayout = {
 		X = 0,
 		Y = 0,
 	},
-	LastChartedPos = nil,
+	LastChartedMousePos = nil,
 }
 local function useBoundCheck(instRef, options)
 	local _binding = options
@@ -73606,7 +73521,7 @@ local function useBoundCheck(instRef, options)
 			ancestorSGRef.current = ancestor
 		end
 	end, { instRef.current })
-	local queryBounds = useCallback(function()
+	local _exp = function()
 		local owner = instRef.current
 		local ancestorSG = ancestorSGRef.current
 		-- Exit if neccessary services/objects are missing
@@ -73672,7 +73587,7 @@ local function useBoundCheck(instRef, options)
 						X = absXSize,
 						Y = absYSize,
 					},
-					LastChartedPos = adjustedMousePos,
+					LastChartedMousePos = adjustedMousePos,
 				})
 				boundEnterRef.current:Fire()
 				return true
@@ -73682,7 +73597,21 @@ local function useBoundCheck(instRef, options)
 			end
 			return prevWithinBounds
 		end)
-	end, { topMostOnly, considerVisibility, instRef.current })
+	end
+	local _exp_1 = instRef.current
+	local _result = instRef.current
+	if _result ~= nil then
+		_result = _result.AbsoluteSize
+	end
+	local _result_1 = instRef.current
+	if _result_1 ~= nil then
+		_result_1 = _result_1.AbsolutePosition
+	end
+	local _result_2 = instRef.current
+	if _result_2 ~= nil then
+		_result_2 = _result_2.AbsoluteRotation
+	end
+	local queryBounds = useCallback(_exp, { topMostOnly, considerVisibility, _exp_1, _result, _result_1, _result_2 })
 	useEffect((function()
 		local instanceID = if instRef.current then tostring(instRef.current) else "N/A"
 		local connectionID = `UIPresets_BoundCheck_{instanceID}`
@@ -73692,7 +73621,7 @@ local function useBoundCheck(instRef, options)
 			boundEnterRef.current:Destroy()
 			boundExitRef.current:Destroy()
 		end
-	end), { queryBounds, instRef })
+	end), { queryBounds, instRef.current })
 	return {
 		withinBounds = withinBounds,
 		bounds = bounds,
@@ -73867,11 +73796,15 @@ return {
 						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local useBinding = _react.useBinding
 local useEffect = _react.useEffect
 local useState = _react.useState
 local useBoundCheck = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useBoundCheck").useBoundCheck
-local RunService = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").RunService
-local DEFAULT_ANCHOR = Vector2.new(0, 0)
+local _services = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services")
+local GuiService = _services.GuiService
+local RunService = _services.RunService
+local UserInputService = _services.UserInputService
+local calculateContentSize = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "helpers", "calculateContentSize").calculateContentSize
 local ToolTipPosition = {
 	TargetRelative = "TargetRelative",
 	MouseBased = "MouseBased",
@@ -73880,57 +73813,112 @@ local DEFAULT_BOUND_OPTIONS = {
 	topMostOnly = false,
 	considerVisibility = true,
 }
-local function useToolTip(targetRef, config)
+local INITIAL_SIZE = Vector2.new(0, 0)
+local function useToolTip(targetRef, config, textProps)
 	local _binding = config
 	local delayMs = _binding.delayMs
 	if delayMs == nil then
 		delayMs = 0
 	end
 	local content = _binding.content
+	local positioningMode = _binding.positioningMode
+	local posBinding, setPosBinding = useBinding(UDim2.fromOffset(0, 0))
 	local toolTipState, setToolTipState = useState(nil)
+	local contentSize, setContentSize = useState(INITIAL_SIZE)
 	local _binding_1 = useBoundCheck(targetRef, DEFAULT_BOUND_OPTIONS)
 	local withinBounds = _binding_1.withinBounds
 	local bounds = _binding_1.bounds
-	local updateToolTipState = function()
-		local anchorPos = if config.anchorPos ~= nil then config.anchorPos else DEFAULT_ANCHOR
-		-- Top-left is how the underlying ToolTips element is positioned
-		local xPos = bounds.C1.X
-		local yPos = bounds.C1.Y
-		local pos = Vector2.new(xPos, yPos)
-		setToolTipState({
-			isShowing = true,
-			pos = pos,
-			anchorPos = anchorPos,
-			content = content,
-		})
-	end
-	local showToolTipWithDelay = function()
-		local delay = delayMs / 1000
-		local elapsed = 0
-		while elapsed < delay do
-			local dt = RunService.Heartbeat:Wait()
-			elapsed += dt
-		end
-		updateToolTipState()
-	end
+	-- Async size calculation which will fetch the content size needed for the ToolTip
 	useEffect(function()
-		local delayThread
-		if withinBounds then
-			if delayMs > 0 then
-				delayThread = coroutine.create(showToolTipWithDelay)
-				coroutine.resume(delayThread)
-			else
-				updateToolTipState()
+		if not withinBounds then
+			setContentSize(INITIAL_SIZE)
+			return nil
+		end
+		local isCancelled = false
+		task.spawn(function()
+			local currentTarget = targetRef.current
+			local _result = currentTarget
+			if _result ~= nil then
+				_result = _result.AbsoluteSize.X
 			end
-		else
+			local _condition = _result
+			if _condition == nil then
+				_condition = 400
+			end
+			local maxWidth = _condition
+			local calculated = calculateContentSize({
+				text = tostring(config.content),
+				textSize = textProps.textSize,
+				font = textProps.font,
+				richText = textProps.richText,
+			}, Vector2.new(maxWidth, 100000))
+			if not isCancelled then
+				setContentSize(calculated)
+			end
+		end)
+		return function()
+			isCancelled = true
+		end
+	end, { withinBounds, content, textProps.textSize, textProps.font, textProps.richText })
+	-- Position & delay
+	useEffect(function()
+		if not withinBounds or contentSize == INITIAL_SIZE then
 			setToolTipState(nil)
+			return nil
+		end
+		local delayThread
+		local renderConn
+		local showToolTip = function()
+			local anchorPos = config.anchorPos or Vector2.new(0.5, 0)
+			local anchorPoint = Vector2.new(1 - anchorPos.X, 1 - anchorPos.Y)
+			if positioningMode == ToolTipPosition.MouseBased then
+				local topLeft, _ = GuiService:GetGuiInset()
+				renderConn = RunService.RenderStepped:Connect(function()
+					local mousePos = UserInputService:GetMouseLocation()
+					local adjustedMousePos = Vector2.new(mousePos.X - topLeft.X, mousePos.Y - topLeft.Y)
+					local x = adjustedMousePos.X - anchorPos.X * contentSize.X
+					local y = adjustedMousePos.Y - anchorPos.Y * contentSize.Y
+					setPosBinding(UDim2.fromOffset(x, y))
+				end)
+			elseif positioningMode == ToolTipPosition.TargetRelative then
+				-- Calculate TargetRelative position using anchor Math
+				local xPos = (bounds.C1.X + anchorPos.X * bounds.Size.X) - contentSize.X * anchorPoint.X
+				local yPos = (bounds.C1.Y + anchorPos.Y * bounds.Size.Y) - contentSize.Y * anchorPoint.Y
+				setPosBinding(UDim2.fromOffset(xPos, yPos))
+			else
+				error(`Unknown ToolTipPosition.{positioningMode}? This member does not exist.`)
+			end
+			setToolTipState({
+				isShowing = true,
+				bind_pos = posBinding,
+				anchorPos = anchorPos,
+				content = content,
+				calculatedSize = contentSize,
+			})
+		end
+		if delayMs > 0 then
+			delayThread = coroutine.create(function()
+				local delaySecs = delayMs / 1000
+				local elapsed = 0
+				while elapsed < delaySecs do
+					local dt = RunService.Heartbeat:Wait()
+					elapsed += dt
+				end
+				showToolTip()
+			end)
+			coroutine.resume(delayThread)
+		else
+			showToolTip()
 		end
 		return function()
 			if delayThread and coroutine.status(delayThread) == "suspended" then
 				task.cancel(delayThread)
 			end
+			if renderConn then
+				renderConn:Disconnect()
+			end
 		end
-	end, { withinBounds, bounds, delayMs, content })
+	end, { withinBounds, bounds, contentSize, delayMs, content, config.anchorPos, positioningMode })
 	return toolTipState
 end
 return {
@@ -73949,6 +73937,146 @@ return {
 						<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029b7</UniqueId>
 					</Properties>
 				</Item>
+				<Item class="ModuleScript" referent="RBX8779D1981F5941AAB1B13486485358EA">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local useCallback = _react.useCallback
+local useEffect = _react.useEffect
+local useMemo = _react.useMemo
+local useRef = _react.useRef
+local useState = _react.useState
+local Object = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "object-utils")
+local function useContextMenu(_param)
+	local config = _param.config
+	local menuId = _param.menuId
+	local onOpen = _param.onOpen
+	local itemIds, setItemIds = useState({})
+	local actionsRef = useRef({})
+	local triggerNodesRef = useRef({})
+	local triggerConnsRef = useRef({})
+	local _binding = config
+	local activateAnywhere = _binding.activateAnywhere
+	local registerItemId = useCallback(function(id)
+		setItemIds(function(prevIds)
+			local _prevIds = prevIds
+			local _id = id
+			if not (table.find(_prevIds, _id) ~= nil) then
+				local _array = {}
+				local _length = #_array
+				local _prevIdsLength = #prevIds
+				table.move(prevIds, 1, _prevIdsLength, _length + 1, _array)
+				_length += _prevIdsLength
+				_array[_length + 1] = id
+				return _array
+			end
+			return prevIds
+		end)
+	end, {})
+	local unregisterItemId = useCallback(function(id)
+		setItemIds(function(prevIds)
+			-- ▼ ReadonlyArray.filter ▼
+			local _newValue = {}
+			local _callback = function(itemId)
+				return itemId ~= id
+			end
+			local _length = 0
+			for _k, _v in prevIds do
+				if _callback(_v, _k - 1, prevIds) == true then
+					_length += 1
+					_newValue[_length] = _v
+				end
+			end
+			-- ▲ ReadonlyArray.filter ▲
+			return _newValue
+		end)
+		local _current = actionsRef.current
+		local _id = id
+		_current[_id] = nil
+	end, {})
+	local registerAction = useCallback(function(id, cb)
+		local _current = actionsRef.current
+		local _id = id
+		local _cb = cb
+		_current[_id] = _cb
+	end, {})
+	local unregisterAction = useCallback(function(id)
+		local _current = actionsRef.current
+		local _id = id
+		_current[_id] = nil
+	end, {})
+	local performAction = useCallback(function(id, ...)
+		local args = { ... }
+		local _current = actionsRef.current
+		local _id = id
+		local fn = _current[_id]
+		if fn then
+			fn(unpack(args))
+		end
+	end, {})
+	-- Keep a stable ref to the latest onOpen handler (onOpen is provided via props)
+	local onOpenRef = useRef(onOpen)
+	useEffect(function()
+		onOpenRef.current = onOpen
+	end, { onOpen })
+	local getLayoutOrder = useCallback(function(id)
+		-- ▼ ReadonlyArray.findIndex ▼
+		local _callback = function(i)
+			return i == id
+		end
+		local _result = -1
+		for _i, _v in itemIds do
+			if _callback(_v, _i - 1, itemIds) == true then
+				_result = _i - 1
+				break
+			end
+		end
+		-- ▲ ReadonlyArray.findIndex ▲
+		local idx = _result
+		return if idx == -1 then 0 else idx + 1
+	end, { itemIds })
+	local contextVal = useMemo(function()
+		return {
+			registerItemId = registerItemId,
+			unregisterItemId = unregisterItemId,
+			registerAction = registerAction,
+			unregisterAction = unregisterAction,
+			performAction = performAction,
+			getLayoutOrder = getLayoutOrder,
+		}
+	end, { registerItemId, unregisterItemId, registerAction, unregisterAction, performAction, getLayoutOrder })
+	useEffect(function()
+		return function()
+			for _, conn in Object.values(triggerConnsRef.current) do
+				conn:Disconnect()
+			end
+			table.clear(triggerConnsRef.current)
+			table.clear(triggerNodesRef.current)
+			table.clear(actionsRef.current)
+		end
+	end, {})
+	return {
+		itemIds = itemIds,
+		contextVal = contextVal,
+	}
+end
+return {
+	useContextMenu = useContextMenu,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{BE8DD8B9-9C4B-4B00-8180-DBD18C7DA3E6}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">useContextMenu</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029af</UniqueId>
+					</Properties>
+				</Item>
 			</Item>
 			<Item class="ModuleScript" referent="RBX2297B0F482A247FEB9C87590A9CBF17E">
 				<Properties>
@@ -73956,10 +74084,11 @@ return {
 					<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
-local CloseBtn = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "CloseBtn").CloseBtn
+local CloseBtn = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "CloseBtn").CloseBtn
 local SelectableGroup = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "SelectableGroup").SelectableGroup
 local SelectableItem = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "SelectableItem").SelectableItem
-local ToolTipSample = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "SampleToolTip").ToolTipSample
+local SampleToolTip = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "SampleToolTip").SampleToolTip
+local SampleContextMenu = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "SampleContextMenu").SampleContextMenu
 local App = function()
 	return React.createElement("screengui", {
 		ResetOnSpawn = false,
@@ -73997,7 +74126,7 @@ local App = function()
 		btnType = "TextButton",
 		Text = "Button C",
 		Size = UDim2.fromOffset(50, 50),
-	})), React.createElement(ToolTipSample)))
+	})), React.createElement(SampleToolTip), React.createElement(SampleContextMenu)))
 end
 return {
 	App = App,
@@ -74109,14 +74238,15 @@ return {
 						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local isFontObject = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "helpers", "calculateContentSize").isFontObject
 local DEFAULT_TEXT_SIZE = UDim2.fromOffset(120, 30)
 local DEFAULT_IMAGE_SIZE = UDim2.fromOffset(150, 150)
 local function ToolTipDisplay(_param)
 	local data = _param.data
 	local imageContent = _param.imageContent
+	local calculateContentProps = _param.calculateContentProps
 	local hasImageBackground = imageContent ~= nil and #imageContent > 0
 	local contentSize = if hasImageBackground then DEFAULT_IMAGE_SIZE else DEFAULT_TEXT_SIZE
-	local posOffset = UDim2.fromOffset(data.pos.X, data.pos.Y)
 	local textStr = tostring(data.content)
 	local children = {}
 	local _value = hasImageBackground and imageContent
@@ -74132,28 +74262,37 @@ local function ToolTipDisplay(_param)
 		})
 		table.insert(children, _arg0)
 	end
-	local _arg0 = React.createElement("textlabel", {
+	local fontProps = {}
+	if isFontObject(calculateContentProps.font) then
+		fontProps.FontFace = calculateContentProps.font
+	else
+		fontProps.Font = calculateContentProps.font
+	end
+	local _attributes = {
 		key = "TextDisplay",
 		Text = textStr,
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
-		Font = Enum.Font.SourceSans,
 		TextColor3 = Color3.new(1, 1, 1),
 		TextSize = 16,
 		TextWrapped = true,
 		TextXAlignment = Enum.TextXAlignment.Center,
 		TextYAlignment = Enum.TextYAlignment.Center,
 		ZIndex = 2,
-	})
+	}
+	for _k, _v in fontProps do
+		_attributes[_k] = _v
+	end
+	local _arg0 = React.createElement("textlabel", _attributes)
 	table.insert(children, _arg0)
 	return React.createElement("frame", {
 		key = "ToolTipFrame",
-		Position = posOffset,
-		Size = contentSize,
+		Size = UDim2.fromOffset(data.calculatedSize.X, data.calculatedSize.Y),
 		BackgroundColor3 = Color3.fromRGB(75, 75, 75),
 		BackgroundTransparency = 0,
 		BorderSizePixel = 0,
 		ZIndex = 0,
+		Position = data.bind_pos,
 	}, children)
 end
 return {
@@ -74169,6 +74308,323 @@ return {
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 						<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029be</UniqueId>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX72F6E685D11C4EDBB1C046E6599C29C0">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local React = _react
+local useCallback = _react.useCallback
+local menuRegistry = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "registries", "menuRegistry")
+local function ContextMenuTriggerBtn(props)
+	local menuId = props.menuId
+	local ref = useCallback(function(node)
+		if node then
+			menuRegistry.registerTrigger(menuId, node)
+		else
+			menuRegistry.unregisterTrigger(menuId)
+		end
+	end, { menuId })
+	local _object = table.clone(props)
+	setmetatable(_object, nil)
+	local native = _object
+	native.menuId = nil
+	native.children = nil
+	local _attributes = {
+		ref = ref,
+	}
+	for _k, _v in native do
+		_attributes[_k] = _v
+	end
+	return React.createElement("textbutton", _attributes)
+end
+return {
+	ContextMenuTriggerBtn = ContextMenuTriggerBtn,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{B0F196F0-5475-4DAF-AC0B-721B62108866}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">ContextMenuTriggerBtn</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029aa</UniqueId>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX05455DE08E8C4016A5AE5662A50F8D30">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local React = _react
+local useContext = _react.useContext
+local useEffect = _react.useEffect
+local ContextMenuContext = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "context", "ContextMenuContext").ContextMenuContext
+local function ContextMenuItem(props)
+	local _binding = useContext(ContextMenuContext)
+	local registerItemId = _binding.registerItemId
+	local unregisterItemId = _binding.unregisterItemId
+	local registerAction = _binding.registerAction
+	local unregisterAction = _binding.unregisterAction
+	local performAction = _binding.performAction
+	local getLayoutOrder = _binding.getLayoutOrder
+	local id = props.id
+	local text = props.text
+	useEffect(function()
+		registerItemId(id)
+		return function()
+			return unregisterItemId(id)
+		end
+	end, { id, registerItemId, unregisterItemId })
+	useEffect(function()
+		if props.onActivate and registerAction then
+			registerAction(id, props.onActivate)
+			return function()
+				if unregisterAction then
+					unregisterAction(id)
+				end
+			end
+		end
+		return nil
+	end, { id, props.onActivate, registerAction, unregisterAction })
+	local handleClick = React.useCallback(function()
+		if performAction then
+			performAction(id)
+		elseif props.onActivate then
+			props.onActivate()
+		end
+	end, { id, performAction, props.onActivate })
+	local _object = table.clone(props)
+	setmetatable(_object, nil)
+	local nativeProps = _object
+	nativeProps.id = nil
+	nativeProps.text = nil
+	nativeProps.onActivate = nil
+	nativeProps.children = nil
+	local layoutOrder = if getLayoutOrder then getLayoutOrder(id) else 0
+	local _attributes = table.clone(nativeProps)
+	setmetatable(_attributes, nil)
+	_attributes.LayoutOrder = layoutOrder
+	_attributes.Size = UDim2.new(1, 0, 0, 30)
+	_attributes.Text = `\{Item: {id}\} - {text}`
+	_attributes.Event = {
+		MouseButton1Click = handleClick,
+	}
+	return React.createElement("textbutton", _attributes)
+end
+return {
+	ContextMenuItem = ContextMenuItem,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{C0F0C4C8-2C6F-4A7E-A9F5-B4F511154560}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">ContextMenuItem</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029b1</UniqueId>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX1E4EB6AA6E794124A8ABCACE3618B35D">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local React = _react
+local useCallback = _react.useCallback
+local useEffect = _react.useEffect
+local useRef = _react.useRef
+local useState = _react.useState
+local ContextMenuContext = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "context", "ContextMenuContext").ContextMenuContext
+local useContextMenu = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "hooks", "useContextMenu").useContextMenu
+local onOpenContextMenu = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "registries", "menuRegistry").onOpenContextMenu
+local ContextMenuPortal = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "portals", "ContextMenuPortal").ContextMenuPortal
+local function ContextMenu(_param)
+	local menuId = _param.menuId
+	local children = _param.children
+	local open, setOpen = useState(false)
+	local pos, setPos = useState(UDim2.new(0, 0, 0, 0))
+	local activeTrigger, setActiveTrigger = useState(nil)
+	local _binding = useContextMenu({
+		menuId = menuId,
+		config = {
+			activateAnywhere = false,
+		},
+	})
+	local contextVal = _binding.contextVal
+	local itemIds = _binding.itemIds
+	local menuRef = useRef()
+	local handleMenuOpen = useCallback(function(menuId, node)
+		if not menuRef.current then
+			print("No ref")
+			return nil
+		end
+		local contextMenu = menuRef.current
+		if open then
+			print(`Closing context menu: {menuId}`)
+			setOpen(false)
+			return nil
+		end
+		if node then
+			local viewportSize = game.Workspace.CurrentCamera.ViewportSize
+			local absSizeY = node.AbsoluteSize.Y
+			local absPosY = node.AbsolutePosition.Y
+			local yAnchor = node.AnchorPoint.Y
+			local topAbsPosY = math.ceil(absPosY - absSizeY * yAnchor)
+			local leftAbsPosX = node.AbsolutePosition.X - math.ceil(node.AbsoluteSize.X * node.AnchorPoint.X)
+			local rightAbsPosX = leftAbsPosX + contextMenu.AbsoluteSize.X
+			-- Position the menu before open
+			local isSizeOverHalfX = leftAbsPosX > viewportSize.X / 2
+			local isSizeOverHalfY = absPosY > viewportSize.Y / 2
+			local xOffset = if isSizeOverHalfX then leftAbsPosX - contextMenu.AbsoluteSize.X else rightAbsPosX + (node.AbsoluteSize.X - contextMenu.AbsoluteSize.X)
+			local yOffset = if isSizeOverHalfY then (topAbsPosY + -(contextMenu.AbsoluteSize.Y - math.ceil(1 / viewportSize.Y) * contextMenu.AbsoluteSize.Y)) else topAbsPosY
+			setPos(UDim2.fromOffset(xOffset, yOffset))
+		end
+		print(`Opening context menu: {menuId}`)
+		setOpen(true)
+	end, { open, pos })
+	useEffect(function()
+		onOpenContextMenu(menuId, handleMenuOpen)
+		return function()
+			return onOpenContextMenu(menuId, nil)
+		end
+	end, { menuId, handleMenuOpen })
+	return React.createElement(ContextMenuContext.Provider, {
+		value = contextVal,
+	}, open and React.createElement(ContextMenuPortal, {
+		menuRef = menuRef,
+		key = `ContextMenu-{menuId}`,
+		position = pos,
+	}, children))
+end
+return {
+	ContextMenu = ContextMenu,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{A4CFC759-3126-4584-B271-5A735F4B67C3}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">ContextMenu</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029b3</UniqueId>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX7B1A68867D8444C3BBAFFB2796F48B3B">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _react = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local React = _react
+local useMemo = _react.useMemo
+local useRef = _react.useRef
+local TweenService = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").TweenService
+local DEFAULT_CLOSE = "http://www.roblox.com/asset/?id=6031094678"
+local DEFAULT_SIZE = UDim2.new(0.1, 0, 0.1, 0)
+local DEFAULT_BTN_COLOR = Color3.fromRGB(215, 0, 0)
+local TWEEN_INFO = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local function CloseBtn(btnProps)
+	local _condition = btnProps.btnContent
+	if _condition == nil then
+		_condition = DEFAULT_CLOSE
+	end
+	local btnContent = _condition
+	local btnSize = btnProps.size or DEFAULT_SIZE
+	local btnColor = btnProps.btnColor or DEFAULT_BTN_COLOR
+	local bgColor = btnProps.bgColor or Color3.new(1, 1, 1)
+	local containerRef = useRef()
+	local shaderRef = useRef()
+	local btnRef = useRef()
+	-- Calculate contrast
+	local shaderColor = useMemo(function()
+		local lum = bgColor.R * 0.299 + bgColor.G * 0.587 + bgColor.B * 0.114
+		return if lum > 0.5 then Color3.new(0, 0, 0) else Color3.new(1, 1, 1)
+	end, { bgColor })
+	local setShaderOpacity = function(transparency)
+		if shaderRef.current then
+			TweenService:Create(shaderRef.current, TWEEN_INFO, {
+				BackgroundTransparency = transparency,
+			}):Play()
+		end
+	end
+	return React.createElement("frame", {
+		key = "CloseBtnContainer",
+		ref = containerRef,
+		Size = btnSize,
+		BackgroundTransparency = 1,
+		ClipsDescendants = true,
+		BorderSizePixel = 0,
+	}, React.createElement("uiaspectratioconstraint", {
+		key = "UIAspectRatioConstraint",
+		AspectRatio = 1,
+		AspectType = Enum.AspectType.FitWithinMaxSize,
+		DominantAxis = Enum.DominantAxis.Height,
+	}), React.createElement("frame", {
+		key = "Shader",
+		ref = shaderRef,
+		ZIndex = 2,
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = shaderColor,
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		Active = false,
+	}), React.createElement("imagebutton", {
+		key = "CloseBtn",
+		ref = btnRef,
+		ZIndex = 1,
+		Size = UDim2.fromScale(1, 1),
+		Image = btnContent,
+		ImageColor3 = btnColor,
+		ScaleType = Enum.ScaleType.Fit,
+		AutoButtonColor = false,
+		Event = {
+			MouseButton1Click = function()
+				-- Hide the CloseBtn
+				if containerRef.current then
+					containerRef.current.Visible = false
+				end
+				btnProps.onClose()
+			end,
+			MouseEnter = function()
+				return setShaderOpacity(0.85)
+			end,
+			MouseLeave = function()
+				return setShaderOpacity(1)
+			end,
+			MouseButton1Down = function()
+				return setShaderOpacity(0.7)
+			end,
+			MouseButton1Up = function()
+				return setShaderOpacity(0.85)
+			end,
+		},
+	}))
+end
+return {
+	CloseBtn = CloseBtn,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{3FD693FC-CFAD-4814-9517-762A1A9F23D0}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">CloseBtn</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029bd</UniqueId>
 					</Properties>
 				</Item>
 			</Item>
@@ -74244,14 +74700,21 @@ local ToolTipPosition = _useToolTip.ToolTipPosition
 local ToolTipDisplay = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "ToolTipDisplay").ToolTipDisplay
 local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
 local ToolTipPortal = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "portals", "ToolTipPortal").ToolTipPortal
-local function ToolTipSample()
+local DEFAULT_TOOLTIP_PROPS = {
+	textSize = 18,
+	font = Enum.Font.Gotham,
+	richText = false,
+}
+local function SampleToolTip(_param)
+	local calculateProps = _param.calculateProps
 	local testBtnRef = useRef()
+	local _calculateProps = calculateProps or DEFAULT_TOOLTIP_PROPS
 	local btnToolTip = useToolTip(testBtnRef, {
 		content = "A tooltip testing description.",
 		delayMs = 0,
-		positioningMode = ToolTipPosition.TargetRelative,
-		anchorPos = Vector2.new(0.5, 0.5),
-	})
+		positioningMode = ToolTipPosition.MouseBased,
+		anchorPos = Vector2.new(0.5, 1.25),
+	}, _calculateProps)
 	return React.createElement(React.Fragment, nil, React.createElement("textbutton", {
 		ref = testBtnRef,
 		Text = "A test button",
@@ -74260,10 +74723,11 @@ local function ToolTipSample()
 		BackgroundColor3 = Color3.fromRGB(65, 65, 65),
 	}), if btnToolTip then (React.createElement(ToolTipPortal, nil, React.createElement(ToolTipDisplay, {
 		data = btnToolTip,
+		calculateContentProps = _calculateProps,
 	}))) else (React.createElement(React.Fragment)))
 end
 return {
-	ToolTipSample = ToolTipSample,
+	SampleToolTip = SampleToolTip,
 }
 ]]></ProtectedString>
 					<string name="ScriptGuid">{278EBE7D-6744-4350-B72B-C5FCC0639324}</string>
@@ -74316,6 +74780,37 @@ return {
 						<UniqueId name="UniqueId">1cf50d17d59460f40942fc27000029bc</UniqueId>
 					</Properties>
 				</Item>
+				<Item class="ModuleScript" referent="RBXFA9B4B55901541EAA4E769EA13584FAC">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local ContextMenuContext = React.createContext({
+	registerItemId = function() end,
+	unregisterItemId = function() end,
+	registerAction = function() end,
+	unregisterAction = function() end,
+	performAction = function() end,
+	getLayoutOrder = function()
+		return 0
+	end,
+})
+return {
+	ContextMenuContext = ContextMenuContext,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{C2438F5F-FB77-4451-AD69-5D456901B483}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">ContextMenuContext</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029ad</UniqueId>
+					</Properties>
+				</Item>
 			</Item>
 			<Item class="Folder" referent="RBX3CE918B90E1444D6B78177DAB854ABD4">
 				<Properties>
@@ -74335,6 +74830,12 @@ return {
 local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
 local Players = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").Players
 local TOOLTIP_ROOT_NAME = "ROOT_TOOLTIP"
+local TOOLTIP_ROOT_ORDER = 1800
+--[[
+	* Gets or creates a root UI for ToolTip with a
+	 * DisplayOrder based of 1800(designed to be placed on-top of other elements)
+	 
+]]
 local function getOrCreateRootUI()
 	local _playerGui = Players.LocalPlayer
 	if _playerGui ~= nil then
@@ -74352,12 +74853,13 @@ local function getOrCreateRootUI()
 	rootUI.Name = TOOLTIP_ROOT_NAME
 	rootUI.ResetOnSpawn = false
 	rootUI.ZIndexBehavior = Enum.ZIndexBehavior.Global
-	rootUI.DisplayOrder = 1000
+	rootUI.DisplayOrder = TOOLTIP_ROOT_ORDER
 	rootUI.Parent = playerGui
 	return rootUI
 end
 local ToolTipRoot = getOrCreateRootUI()
 return {
+	TOOLTIP_ROOT_ORDER = TOOLTIP_ROOT_ORDER,
 	ToolTipRoot = ToolTipRoot,
 }
 ]]></ProtectedString>
@@ -74370,6 +74872,58 @@ return {
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 						<UniqueId name="UniqueId">1cf50d17d59460f40942fc2700002a8a</UniqueId>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBXD96E21FD0AE54874AC0BA07DDD5F5939">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local Players = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").Players
+local TOOLTIP_ROOT_ORDER = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "misc", "ToolTipRoot").TOOLTIP_ROOT_ORDER
+local CONTEXT_MENU_ROOT_NAME = "ROOT_CONTEXT_MENU"
+local CONTEXT_MENU_ROOT_ORDER = TOOLTIP_ROOT_ORDER - 100
+--[[
+	* Gets or creates a root UI for ContextMenu with a
+	 * DisplayOrder based from (ToolTipRoot.DisplayOrder - 100)
+	 
+]]
+local function getOrCreateRootUI()
+	local _playerGui = Players.LocalPlayer
+	if _playerGui ~= nil then
+		_playerGui = _playerGui:WaitForChild("PlayerGui")
+	end
+	local playerGui = _playerGui
+	if not playerGui then
+		error(error("Cannot find PlayerGui for the local player."))
+	end
+	local rootUI = playerGui:FindFirstChild(CONTEXT_MENU_ROOT_NAME)
+	if rootUI and rootUI:IsA("ScreenGui") then
+		return rootUI
+	end
+	rootUI = Instance.new("ScreenGui")
+	rootUI.Name = CONTEXT_MENU_ROOT_NAME
+	rootUI.ResetOnSpawn = false
+	rootUI.ZIndexBehavior = Enum.ZIndexBehavior.Global
+	rootUI.DisplayOrder = CONTEXT_MENU_ROOT_ORDER
+	rootUI.Parent = playerGui
+	return rootUI
+end
+local ContextMenuRoot = getOrCreateRootUI()
+return {
+	CONTEXT_MENU_ROOT_ORDER = CONTEXT_MENU_ROOT_ORDER,
+	ContextMenuRoot = ContextMenuRoot,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{34464339-1828-43AC-A35B-09B463D3AB8D}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">ContextMenuRoot</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029c1</UniqueId>
 					</Properties>
 				</Item>
 			</Item>
@@ -74408,6 +74962,306 @@ return {
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 						<UniqueId name="UniqueId">1cf50d17d59460f40942fc2700002a8d</UniqueId>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBXD9A1A5D53D1A4C459C7336243015839F">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local createPortal = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react-roblox").createPortal
+local ContextMenuRoot = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "misc", "ContextMenuRoot").ContextMenuRoot
+local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local function ContextMenuPortal(_param)
+	local position = _param.position
+	local menuRef = _param.menuRef
+	local children = _param.children
+	return createPortal(React.createElement("scrollingframe", {
+		ref = menuRef,
+		Position = UDim2.fromOffset(position.X.Offset, position.Y.Offset),
+		Size = UDim2.fromOffset(400, 400),
+		CanvasSize = UDim2.new(0, 0, 0, 0),
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		ScrollingDirection = Enum.ScrollingDirection.Y,
+	}, children, React.createElement("uilistlayout", {
+		FillDirection = Enum.FillDirection.Vertical,
+		SortOrder = Enum.SortOrder.LayoutOrder,
+	})), ContextMenuRoot)
+end
+return {
+	ContextMenuPortal = ContextMenuPortal,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{139FFE4B-B32A-4E2F-A66B-FD8617301337}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">ContextMenuPortal</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029bf</UniqueId>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="Folder" referent="RBX43F5DD40E9C94CC7B00A9B33C19A53E7">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">registries</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029b5</UniqueId>
+				</Properties>
+				<Item class="ModuleScript" referent="RBXAB1030EE95B74CE48484AB5A1140D38A">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local triggers = {}
+local conns = {}
+local openHandlers = {}
+local function registerTrigger(menuId, node)
+	-- Remove any previous recordings of this menu in the registry
+	if not node then
+		local _menuId = menuId
+		local triggerSet = triggers[_menuId]
+		if triggerSet then
+			for trig in triggerSet do
+				local conn = conns[trig]
+				if conn then
+					conn:Disconnect()
+				end
+				conns[trig] = nil
+			end
+		end
+		local _menuId_1 = menuId
+		triggers[_menuId_1] = nil
+		return nil
+	end
+	local _menuId = menuId
+	local triggerSet = triggers[_menuId]
+	if not triggerSet then
+		triggerSet = {}
+		local _menuId_1 = menuId
+		local _triggerSet = triggerSet
+		triggers[_menuId_1] = _triggerSet
+	end
+	local _triggerSet = triggerSet
+	local _node = node
+	if not (_triggerSet[_node] ~= nil) then
+		local _triggerSet_1 = triggerSet
+		local _node_1 = node
+		_triggerSet_1[_node_1] = true
+		local conn = (node.InputBegan):Connect(function(input, processed)
+			if processed then
+				return nil
+			end
+			if input.UserInputType == Enum.UserInputType.MouseButton2 then
+				local _menuId_1 = menuId
+				local _result = openHandlers[_menuId_1]
+				if _result ~= nil then
+					_result(menuId, node)
+				end
+			end
+		end)
+		local _node_2 = node
+		conns[_node_2] = conn
+	end
+end
+local function unregisterTrigger(menuId, node)
+	if not node then
+		local _menuId = menuId
+		local triggerSet = triggers[_menuId]
+		if not triggerSet then
+			return nil
+		end
+		for trig in triggerSet do
+			local conn = conns[trig]
+			if conn then
+				conn:Disconnect()
+			end
+			conns[trig] = nil
+		end
+		local _menuId_1 = menuId
+		triggers[_menuId_1] = nil
+		return nil
+	end
+	local _menuId = menuId
+	local triggerSet = triggers[_menuId]
+	if not triggerSet then
+		return nil
+	end
+	local _node = node
+	if triggerSet[_node] ~= nil then
+		local _node_1 = node
+		local conn = conns[_node_1]
+		if conn then
+			conn:Disconnect()
+		end
+		local _node_2 = node
+		conns[_node_2] = nil
+		local _node_3 = node
+		triggerSet[_node_3] = nil
+		-- ▼ ReadonlySet.size ▼
+		local _size = 0
+		for _ in triggerSet do
+			_size += 1
+		end
+		-- ▲ ReadonlySet.size ▲
+		if _size == 0 then
+			local _menuId_1 = menuId
+			triggers[_menuId_1] = nil
+		end
+	end
+end
+local function onOpenContextMenu(menuId, handler)
+	if handler then
+		local _menuId = menuId
+		local _handler = handler
+		openHandlers[_menuId] = _handler
+	else
+		local _menuId = menuId
+		openHandlers[_menuId] = nil
+	end
+end
+return {
+	registerTrigger = registerTrigger,
+	unregisterTrigger = unregisterTrigger,
+	onOpenContextMenu = onOpenContextMenu,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{4476D6C8-DF03-4516-8A0B-D92DDF4334DD}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">menuRegistry</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029b6</UniqueId>
+					</Properties>
+				</Item>
+			</Item>
+			<Item class="ModuleScript" referent="RBXA71A6A4198324F96AF80AA716B7B3FFD">
+				<Properties>
+					<Content name="LinkedSource"><null></null></Content>
+					<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local ContextMenu = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "ContextMenu").ContextMenu
+local ContextMenuItem = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "ContextMenuItem").ContextMenuItem
+local ContextMenuTriggerBtn = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "components", "ContextMenuTriggerBtn").ContextMenuTriggerBtn
+local CONTEXT_MENU_ID = "SAMPLE_CONTEXT_MENU"
+local function SampleContextMenu()
+	return React.createElement(React.Fragment, nil, React.createElement(ContextMenuTriggerBtn, {
+		menuId = CONTEXT_MENU_ID,
+		Text = "Right-click me to open the context menu.",
+	}), React.createElement(ContextMenu, {
+		menuId = CONTEXT_MENU_ID,
+	}, React.createElement(ContextMenuItem, {
+		id = "item_1",
+		text = "Sample 1",
+		onActivate = function()
+			print(`Inside item_1`)
+		end,
+	}), React.createElement(ContextMenuItem, {
+		id = "item_2",
+		text = "Sample 2",
+		onActivate = function()
+			print(`Inside item_2`)
+		end,
+	}), React.createElement(ContextMenuItem, {
+		id = "item_3",
+		text = "Sample 3",
+		onActivate = function()
+			print(`Inside item_3`)
+		end,
+	})))
+end
+return {
+	SampleContextMenu = SampleContextMenu,
+}
+]]></ProtectedString>
+					<string name="ScriptGuid">{995C411F-23D1-4281-81E4-6DFAB95F3700}</string>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">SampleContextMenu</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029b8</UniqueId>
+				</Properties>
+			</Item>
+			<Item class="Folder" referent="RBX9D959ADD6436424DADBCAEBAAE62ED61">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">helpers</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029ba</UniqueId>
+				</Properties>
+				<Item class="ModuleScript" referent="RBX6EC3D6D670644AECADC5093F48C98535">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local TextService = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").TextService
+local function isFontObject(val)
+	local _val = val
+	return typeof(_val) == "Font"
+end
+--[[
+	* Calculates how much a font with a size would take up.
+	 * You can provide a Enum.Font or a Font object itself.
+	 * NOTE: When providing a Font object this method can yield especially when the Font is not already loaded.
+	 
+]]
+local function calculateContentSize(props, bounds)
+	if not props.font then
+		return Vector2.new(0, 0)
+	end
+	if isFontObject(props.font) then
+		-- We know it's a Font object
+		local textBoundParams = Instance.new("GetTextBoundsParams")
+		textBoundParams.Font = props.font
+		textBoundParams.RichText = not not props.richText
+		textBoundParams.Size = props.textSize
+		textBoundParams.Text = props.text
+		textBoundParams.Width = bounds.X
+		local success, sizeOrErr = pcall(function()
+			TextService:GetTextBoundsAsync(textBoundParams)
+		end)
+		if success then
+			return sizeOrErr
+		else
+			warn(`calculateContentSize failed for Font object: {sizeOrErr}`)
+			return Vector2.new(0, 0)
+		end
+	else
+		-- Let's assume a Enum.Font
+		return TextService:GetTextSize(props.text, props.textSize, props.font, bounds)
+	end
+end
+return {
+	isFontObject = isFontObject,
+	calculateContentSize = calculateContentSize,
+}
+]]></ProtectedString>
+						<string name="ScriptGuid">{4E0CE78C-3672-4309-AC0C-7E11DB2F77CA}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">calculateContentSize</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029bb</UniqueId>
 					</Properties>
 				</Item>
 			</Item>
