@@ -20,6 +20,7 @@ export const App = () => {
 				FillDirection={Enum.FillDirection.Horizontal}
 				CellPadding={UDim2.fromScale(0.025,0)} // 0.05
 				FillDirectionMaxCells={4}
+				SortOrder={Enum.SortOrder.LayoutOrder}
 				
 				/>
 				
@@ -55,7 +56,8 @@ export const App = () => {
 
 				<SampleToolTip/>
 
-				<SampleContextMenu/>
+				<SampleContextMenu
+				/>
 
 			</scrollingframe>
 		</screengui>
