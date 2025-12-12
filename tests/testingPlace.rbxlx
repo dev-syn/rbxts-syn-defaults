@@ -74971,48 +74971,55 @@ local function ContextMenuPortal(props)
 	local triggerNode = props.triggerNode
 	local children = props.children
 	local ref = useRef(nil)
+	local listLayoutRef = useRef()
 	local position, setPosition = useState(UDim2.new(0, 0, 0, 0))
 	local size, setSize = useState(UDim2.new(0, 250, 0, 300))
-	local listLayoutRef = useRef()
-	local _exp = function()
+	useEffect(function()
 		if not ref.current or not triggerNode then
 			return nil
 		end
 		print(`Ref current: {ref.current}, triggerNode: {triggerNode}`)
-		local menuSize = ref.current.AbsoluteSize
-		local viewportSize = game.Workspace.CurrentCamera.ViewportSize
-		local absSizeY = triggerNode.AbsoluteSize.Y
-		local absPosY = triggerNode.AbsolutePosition.Y
-		local yAnchor = triggerNode.AnchorPoint.Y
-		local topAbsPosY = math.ceil(absPosY - absSizeY * yAnchor)
-		local leftAbsPosX = triggerNode.AbsolutePosition.X - math.ceil(triggerNode.AbsoluteSize.X * triggerNode.AnchorPoint.X)
-		local isSizeOverHalfX = leftAbsPosX > viewportSize.X / 2
-		local isSizeOverHalfY = absPosY > viewportSize.Y / 2
-		local xOffset = if isSizeOverHalfX then leftAbsPosX - menuSize.X else leftAbsPosX + triggerNode.AbsoluteSize.X
-		local yOffset = if isSizeOverHalfY then topAbsPosY - menuSize.Y else topAbsPosY
-		setPosition(UDim2.fromOffset(xOffset, yOffset))
-	end
-	local _result = listLayoutRef.current
-	if _result ~= nil then
-		_result = _result.AbsoluteContentSize
-	end
-	local _result_1 = triggerNode
-	if _result_1 ~= nil then
-		_result_1 = _result_1.AbsolutePosition
-	end
-	useEffect(_exp, { listLayoutRef, _result, triggerNode, _result_1, size })
-	local _exp_1 = function()
-		if not listLayoutRef.current then
+		local updatePosition = function()
+			local menu = ref.current
+			if not menu then
+				return nil
+			end
+			local menuSize = menu.AbsoluteSize
+			local viewportSize = game.Workspace.CurrentCamera.ViewportSize
+			local absSizeY = triggerNode.AbsoluteSize.Y
+			local absPosY = triggerNode.AbsolutePosition.Y
+			local yAnchor = triggerNode.AnchorPoint.Y
+			local topAbsPosY = math.ceil(absPosY - absSizeY * yAnchor)
+			local leftAbsPosX = triggerNode.AbsolutePosition.X - math.ceil(triggerNode.AbsoluteSize.X * triggerNode.AnchorPoint.X)
+			local isSizeOverHalfX = leftAbsPosX > viewportSize.X / 2
+			local isSizeOverHalfY = absPosY > viewportSize.Y / 2
+			local xOffset = if isSizeOverHalfX then leftAbsPosX - menuSize.X else leftAbsPosX + triggerNode.AbsoluteSize.X
+			local yOffset = if isSizeOverHalfY then topAbsPosY - menuSize.Y else topAbsPosY
+			setPosition(UDim2.fromOffset(xOffset, yOffset))
+		end
+		updatePosition()
+		local posConn = triggerNode:GetPropertyChangedSignal("AbsolutePosition"):Connect(updatePosition)
+		local sizeConn = triggerNode:GetPropertyChangedSignal("AbsoluteSize"):Connect(updatePosition)
+		return function()
+			posConn:Disconnect()
+			sizeConn:Disconnect()
+		end
+	end, { triggerNode, size, children })
+	useEffect(function()
+		local layout = listLayoutRef.current
+		if not layout then
 			return nil
 		end
-		local absSize = listLayoutRef.current.AbsoluteContentSize
-		setSize(UDim2.fromOffset(absSize.X, absSize.Y))
-	end
-	local _result_2 = listLayoutRef.current
-	if _result_2 ~= nil then
-		_result_2 = _result_2.AbsoluteContentSize
-	end
-	useEffect(_exp_1, { listLayoutRef, _result_2, triggerNode, position })
+		local updateSize = function()
+			local absSize = layout.AbsoluteContentSize
+			setSize(UDim2.fromOffset(absSize.X, absSize.Y))
+		end
+		updateSize()
+		local conn = layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateSize)
+		return function()
+			return conn:Disconnect()
+		end
+	end, { children })
 	local _object = table.clone(props)
 	setmetatable(_object, nil)
 	local nativeProps = _object
@@ -75309,6 +75316,23 @@ return {
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
 						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029bb</UniqueId>
+					</Properties>
+				</Item>
+				<Item class="ModuleScript" referent="RBX6B11502656D2406FBFFD3BE41DDD92B3">
+					<Properties>
+						<Content name="LinkedSource"><null></null></Content>
+						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+return nil
+]]></ProtectedString>
+						<string name="ScriptGuid">{1F80D6C9-C4D9-4D80-B004-CA53F9AFDC41}</string>
+						<BinaryString name="AttributesSerialize"></BinaryString>
+						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+						<bool name="DefinesCapabilities">false</bool>
+						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+						<string name="Name">utilities</string>
+						<int64 name="SourceAssetId">-1</int64>
+						<BinaryString name="Tags"></BinaryString>
+						<UniqueId name="UniqueId">49c0d30a17fa93f3094e156400002ad6</UniqueId>
 					</Properties>
 				</Item>
 			</Item>
