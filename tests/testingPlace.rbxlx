@@ -74185,7 +74185,7 @@ local function SelectableItem(props)
 		selectItem(props.id)
 	end, { props.id, selectItem })
 	local eventProps = {
-		MouseButton1Click = handleClick,
+		Activated = handleClick,
 	}
 	local _object = table.clone(props)
 	setmetatable(_object, nil)
@@ -74415,7 +74415,7 @@ local function ContextMenuItem(props)
 	_attributes.Size = UDim2.new(1, 0, 0, 30)
 	_attributes.Text = `\{Item: {id}\} - {text}`
 	_attributes.Event = {
-		MouseButton1Click = handleClick,
+		Activated = handleClick,
 	}
 	return React.createElement("textbutton", _attributes)
 end
@@ -74581,7 +74581,7 @@ local function CloseBtn(btnProps)
 		ScaleType = Enum.ScaleType.Fit,
 		AutoButtonColor = false,
 		Event = {
-			MouseButton1Click = function()
+			Activated = function()
 				-- Hide the CloseBtn
 				if containerRef.current then
 					containerRef.current.Visible = false
@@ -74975,10 +74975,10 @@ local function ContextMenuPortal(props)
 	local size, setSize = useState(UDim2.new(0, 250, 0, 300))
 	local listLayoutRef = useRef()
 	local _exp = function()
-		print(`Ref current: {ref.current}, triggerNode: {triggerNode}`)
 		if not ref.current or not triggerNode then
 			return nil
 		end
+		print(`Ref current: {ref.current}, triggerNode: {triggerNode}`)
 		local menuSize = ref.current.AbsoluteSize
 		local viewportSize = game.Workspace.CurrentCamera.ViewportSize
 		local absSizeY = triggerNode.AbsoluteSize.Y
@@ -74996,7 +74996,11 @@ local function ContextMenuPortal(props)
 	if _result ~= nil then
 		_result = _result.AbsoluteContentSize
 	end
-	useEffect(_exp, { listLayoutRef, _result, triggerNode, size })
+	local _result_1 = triggerNode
+	if _result_1 ~= nil then
+		_result_1 = _result_1.AbsolutePosition
+	end
+	useEffect(_exp, { listLayoutRef, _result, triggerNode, _result_1, size })
 	local _exp_1 = function()
 		if not listLayoutRef.current then
 			return nil
@@ -75004,11 +75008,11 @@ local function ContextMenuPortal(props)
 		local absSize = listLayoutRef.current.AbsoluteContentSize
 		setSize(UDim2.fromOffset(absSize.X, absSize.Y))
 	end
-	local _result_1 = listLayoutRef.current
-	if _result_1 ~= nil then
-		_result_1 = _result_1.AbsoluteContentSize
+	local _result_2 = listLayoutRef.current
+	if _result_2 ~= nil then
+		_result_2 = _result_2.AbsoluteContentSize
 	end
-	useEffect(_exp_1, { listLayoutRef, _result_1, triggerNode, position })
+	useEffect(_exp_1, { listLayoutRef, _result_2, triggerNode, position })
 	local _object = table.clone(props)
 	setmetatable(_object, nil)
 	local nativeProps = _object
