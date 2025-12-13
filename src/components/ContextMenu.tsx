@@ -2,11 +2,12 @@ import React, { ComponentPropsWithoutRef, PropsWithChildren, useCallback, useEff
 import { ContextMenuContext, ContextMenuID } from '../context/ContextMenuContext';
 import { useContextMenu } from '../hooks/useContextMenu';
 import { onOpenContextMenu } from '../registries/menuRegistry';
-import { ContextMenuPortal } from '../portals/ContextMenuPortal';
+import { ContextMenuPortal, ContextMenuPortalConfig } from '../portals/ContextMenuPortal';
 
 export interface ContextMenuProps extends PropsWithChildren,
 Partial<ComponentPropsWithoutRef<'scrollingframe'>> {
 	menuId: string;
+	config?: ContextMenuPortalConfig;
 }
 
 export function ContextMenu(props: ContextMenuProps) {
@@ -23,7 +24,6 @@ export function ContextMenu(props: ContextMenuProps) {
 
 	const handleMenuOpen = useCallback((menuId: ContextMenuID,node?: GuiObject) => {
 		if (open) {
-			print(`Closing context menu: ${menuId}`);
 			setOpen(false);
 			setActiveTrigger(undefined);
 			return;
@@ -31,7 +31,6 @@ export function ContextMenu(props: ContextMenuProps) {
 
 		if (node) setActiveTrigger(node);
 
-		print(`Opening context menu: ${menuId}`);
 		setOpen(true);
 	},[open]);
 
@@ -43,6 +42,7 @@ export function ContextMenu(props: ContextMenuProps) {
 	const nativeProps = {...props} as Record<string,unknown>;
 	delete nativeProps.menuId;
 	delete nativeProps.children;
+	delete nativeProps.config;
 
 	
 	return (
@@ -53,6 +53,8 @@ export function ContextMenu(props: ContextMenuProps) {
 				
 				key={`ContextMenu-${menuId}`}
 				triggerNode={activeTrigger}
+				onClose={() => setOpen(false)}
+				config={props.config}
 			>
 				{children}
 			</ContextMenuPortal>}

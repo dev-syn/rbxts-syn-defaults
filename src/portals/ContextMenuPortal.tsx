@@ -4,12 +4,24 @@ import { ContextMenuRoot } from '../misc/ContextMenuRoot';
 import React from '@rbxts/react';
 import { Players, RunService } from '@rbxts/services';
 
+export interface ContextMenuPortalConfig {
+	fullyVisibleOnly?: boolean;
+}
+
+function applyDefaultConfig(config?: ContextMenuPortalConfig) {
+	if (!config) config = {};
+
+	if (config.fullyVisibleOnly === undefined) config.fullyVisibleOnly = false;
+}
+
 interface ContextMenuProps extends PropsWithChildren,
 Partial<ComponentPropsWithRef<'scrollingframe'>> {
 	triggerNode?: GuiObject;
+	onClose: () => void;
+	config?: ContextMenuPortalConfig;
 }
 
-function isTriggerVisible(trigger: GuiObject): [boolean,ScrollingFrame | undefined] {
+function isTriggerVisible(trigger: GuiObject,fullyVisibleOnly?: boolean): [boolean,ScrollingFrame | undefined] {
 	let rootUI: PlayerGui | CoreGui;
 	if (RunService.IsStudio()) rootUI = game.GetService("CoreGui");
 	else rootUI = Players.LocalPlayer.FindFirstChild("PlayerGui") as PlayerGui;
@@ -35,14 +47,24 @@ function isTriggerVisible(trigger: GuiObject): [boolean,ScrollingFrame | undefin
 	const triggerTopY = trigger.AbsolutePosition.Y;
 	const triggerBottomY = triggerTopY + trigger.AbsoluteSize.Y;
 
-	const isOutOfView =
+	let isOutOfView: boolean;
+
+	if (fullyVisibleOnly) {
+		isOutOfView =
+		triggerTopY + 1e-2 < parentTopY ||
+		triggerBottomY - 1e-2 > parentBottomY;
+	} else {
+		isOutOfView =
 		triggerBottomY <= parentTopY ||
 		triggerTopY >= parentBottomY;
+	}
 
 	return [!isOutOfView,parentScrollingFrame];
 }
 
 export function ContextMenuPortal(props: ContextMenuProps) {
+	applyDefaultConfig(props.config);
+
 	const triggerNode = props.triggerNode;
 	const children = props.children;
 
@@ -51,7 +73,7 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 
 	const [position,setPosition] = useState<UDim2>(new UDim2(0,0,0,0));
 	const [size,setSize] = useState<UDim2>(new UDim2(0,250,0,300));
-	const [isVisible,setIsVisible] = useState(true);
+	const [shouldRender,setShouldRender] = useState(true);
 
 	useEffect(() => {
 		if (!ref.current || !triggerNode) return;
@@ -67,11 +89,23 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 			const triggerTopLeftX = triggerNode.AbsolutePosition.X - (triggerNode.AbsoluteSize.X * triggerNode.AnchorPoint.X);
 			const triggerTopLeftY = triggerNode.AbsolutePosition.Y - (triggerNode.AbsoluteSize.Y * triggerNode.AnchorPoint.Y);
 
-			const isOverHalfX = triggerNode.AbsolutePosition.X > viewportSize.X / 2;
-			const isOverHalfY = triggerNode.AbsolutePosition.Y > viewportSize.Y / 2;
+			const defaultX = triggerTopLeftX + triggerNode.AbsoluteSize.X;
+      const defaultY = triggerTopLeftY;
+      
+			let xOffset;
+			let yOffset;
 
-			const xOffset = isOverHalfX ? triggerTopLeftX - menuSize.X : triggerTopLeftX + triggerNode.AbsoluteSize.X;
-			const yOffset = isOverHalfY ? triggerTopLeftY - menuSize.Y : triggerTopLeftY + triggerNode.AbsoluteSize.Y;
+			// Horizontal Flip Check: Does the menu go past the right edge of the screen?
+			if (defaultX + menuSize.X > viewportSize.X) xOffset = triggerTopLeftX - menuSize.X;
+			else xOffset = defaultX;
+
+			// Vertical Flip Check: Does the menu go past the bottom edge of the screen?
+			if (defaultY + menuSize.Y > viewportSize.Y) yOffset = triggerTopLeftY - menuSize.Y;
+			else yOffset = defaultY;
+      
+      // Clamp to prevent the menu from going off the left/top edges
+      xOffset = math.max(xOffset,0);
+      yOffset = math.max(yOffset,0);
 
 			setPosition(UDim2.fromOffset(xOffset,yOffset));
 		};
@@ -105,20 +139,25 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 
 	useEffect(() => {
 		if (!triggerNode) {
-			setIsVisible(false);
+			props.onClose();
 			return;
 		}
 
-		const [initialVisible,parentScrollingFrame] = isTriggerVisible(triggerNode);
-		setIsVisible(initialVisible);
+		const [initialVisible,parentScrollingFrame] = isTriggerVisible(triggerNode,props.config?.fullyVisibleOnly);
+		setShouldRender(initialVisible);
+
+		if (!initialVisible) {
+			props.onClose();
+			return;
+		}
 
 		const checkVisibility = () => {
-			const [newVisible, ] = isTriggerVisible(triggerNode);
+			const [newVisible, ] = isTriggerVisible(triggerNode,props.config?.fullyVisibleOnly);
 
-			if (newVisible !== isVisible) setIsVisible(newVisible);
+			if (!newVisible) props.onClose();
+
+			if (newVisible !== shouldRender) setShouldRender(newVisible);
 		};
-
-		checkVisibility();
 
 		let scrollConn: RBXScriptConnection | undefined;
 
@@ -130,12 +169,14 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 			scrollConn?.Disconnect();
 			posConn.Disconnect();
 		}
-	},[triggerNode,isVisible]);
+	},[triggerNode,props.onClose,shouldRender,props.config?.fullyVisibleOnly]);
 
-	if (!triggerNode || !isVisible) return undefined;
+	if (!triggerNode || !shouldRender) return undefined;
 
-	const nativeProps = {...props};
+	const nativeProps = {...props} as Record<string,unknown>;
 	delete nativeProps.triggerNode;
+	delete nativeProps.onClose;
+	delete nativeProps.config;
 
 	return createPortal(
 		<scrollingframe
