@@ -91,9 +91,7 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 
 		
 		}
-		while(currentParent && RunService.IsStudio() ? game.GetService("CoreGui") : Players.LocalPlayer?.FindFirstChild("PlayerGui")) {
-			if ()
-		}
+		
 	},[]);
 
 	const nativeProps = {...props};
