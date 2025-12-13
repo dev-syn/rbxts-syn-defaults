@@ -116,8 +116,6 @@ export function useBoundCheck(
 			lastChartedMousePos = adjustedMousePos;
 			topCheckingPoint = adjustedMousePos;
 		} else {
-			if (owner.GuiState === Enum.GuiState.Press || owner.GuiState === Enum.GuiState.Hover) inBounds = true;
-
 			inBounds = owner.GuiState === Enum.GuiState.Press || owner.GuiState === Enum.GuiState.Hover ?
 				true : false;
 			topCheckingPoint = new Vector2(leftAbsX,topAbsY);
