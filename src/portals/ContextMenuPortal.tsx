@@ -3,6 +3,7 @@ import { createPortal } from '@rbxts/react-roblox';
 import { ContextMenuRoot } from '../misc/ContextMenuRoot';
 import React from '@rbxts/react';
 import { Players, RunService, StarterGui } from '@rbxts/services';
+import { getPlayerGui } from '../helpers/utilities';
 
 interface ContextMenuProps extends PropsWithChildren,
 Partial<ComponentPropsWithRef<'scrollingframe'>> {
@@ -84,7 +85,12 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 		let parentScrollingFrame: ScrollingFrame | undefined;
 		let currentParent = triggerNode.Parent;
 
-		let localPlayerGui
+		let localPlayerGui: Promise<PlayerGui> = getPlayerGui();
+		
+		const status = localPlayerGui.getStatus();
+
+		
+		}
 		while(currentParent && RunService.IsStudio() ? game.GetService("CoreGui") : Players.LocalPlayer?.FindFirstChild("PlayerGui")) {
 			if ()
 		}
