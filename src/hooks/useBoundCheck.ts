@@ -83,67 +83,86 @@ export function useBoundCheck(
 
 		if (!owner || !ancestorSG || !PlayerGui) return;
 
-		// As of v0.1.0, bound check queries will only be calculated when a mouse position is available.
-		const mousePos = UserInputService.GetMouseLocation();
-		if (!mousePos) return;
-
+		// The size of the bounds element
 		const absXSize: number = owner.AbsoluteSize.X;
 		const absYSize: number = owner.AbsoluteSize.Y;
 
-		const [topLeft,_] = GuiService.GetGuiInset();
-
-		const leftAbsX: number = owner.AbsolutePosition.X
+		// The positioning points of the bounds element
+		const leftAbsX: number = owner.AbsolutePosition.X - (owner.AbsoluteSize.X * owner.AnchorPoint.X);
 		const rightAbsX: number = leftAbsX + absXSize;
-
-		const topAbsY: number = owner.AbsolutePosition.Y
+		const topAbsY: number = owner.AbsolutePosition.Y - (owner.AbsoluteSize.Y * owner.AnchorPoint.Y);
 		const bottomAbsY: number = topAbsY + absYSize;
 
-		const adjustedMousePos = new Vector2(mousePos.X - topLeft.X,mousePos.Y - topLeft.Y);
+		let withinX: boolean = false;
+		let withinY: boolean = false;
+		let inBounds: boolean = false;
 
-		// Checking the bounds
-		const withinX: boolean = adjustedMousePos.X >= leftAbsX && adjustedMousePos.X <= rightAbsX;
-		const withinY: boolean = adjustedMousePos.Y >= topAbsY && adjustedMousePos.Y <= bottomAbsY;
-		let inBounds: boolean = withinX && withinY;
+		let lastChartedMousePos: Vector2 | undefined = undefined;
+		let topCheckingPoint: Vector2 | undefined = undefined;
+
+		const preferredInput = UserInputService.PreferredInput;
+		if (preferredInput === Enum.PreferredInput.KeyboardAndMouse) {
+			const mousePos = UserInputService.GetMouseLocation();
+			if (!mousePos) return;
+
+			const [topLeft,_] = GuiService.GetGuiInset();
+			const adjustedMousePos = new Vector2(mousePos.X - topLeft.X,mousePos.Y - topLeft.Y);
+
+			// Checking the bounds
+			withinX = adjustedMousePos.X >= leftAbsX && adjustedMousePos.X <= rightAbsX;
+			withinY = adjustedMousePos.Y >= topAbsY && adjustedMousePos.Y <= bottomAbsY;
+			inBounds = withinX && withinY;
+
+			lastChartedMousePos = adjustedMousePos;
+			topCheckingPoint = adjustedMousePos;
+		} else {
+			if (owner.GuiState === Enum.GuiState.Press || owner.GuiState === Enum.GuiState.Hover) inBounds = true;
+
+			inBounds = owner.GuiState === Enum.GuiState.Press || owner.GuiState === Enum.GuiState.Hover ?
+				true : false;
+			topCheckingPoint = new Vector2(leftAbsX,topAbsY);
+		}
 
 		setWithinBounds(prevWithinBounds => {
-			// Visibility check
-			if (considerVisibility && !owner.Visible) {
-				if (prevWithinBounds) boundExitRef.current.Fire();
-				return false;
-			}
+		// Visibility check
+		if (considerVisibility && !owner.Visible) {
+			if (prevWithinBounds) boundExitRef.current.Fire();
+			return false;
+		}
 
-			// TopMostOnly check
-			if (topMostOnly && inBounds) {
-				const uis: GuiObject[] = PlayerGui.GetGuiObjectsAtPosition(mousePos.X,mousePos.Y);
-				if (uis.size() === 0 || uis[0] !== owner) {
-					inBounds = false;
-				}
-			}
+		// TopMostOnly check
+		if (topMostOnly && inBounds) {
+			const uis: GuiObject[] = PlayerGui.GetGuiObjectsAtPosition(
+				topCheckingPoint.X,
+				topCheckingPoint.Y
+			);
+			if (uis.size() === 0 || uis[0] !== owner) inBounds = false;
+		}
 
-			if (inBounds && !prevWithinBounds) {
-				setBounds({
-					// Top Left
-					C1: { X: leftAbsX,Y: topAbsY},
-					// Top Right
-					C2: { X: rightAbsX,Y: topAbsY},
-					// Bottom Left
-					C3: { X: leftAbsX,Y: bottomAbsY},
-					// Bottom Right
-					C4: { X: rightAbsX,Y: bottomAbsY},
-					// Bound Size
-					Size: { X: absXSize, Y: absYSize },
-					LastChartedMousePos: adjustedMousePos
-				});
+		if (inBounds && !prevWithinBounds) {
+			setBounds({
+				// Top Left
+				C1: { X: leftAbsX,Y: topAbsY},
+				// Top Right
+				C2: { X: rightAbsX,Y: topAbsY},
+				// Bottom Left
+				C3: { X: leftAbsX,Y: bottomAbsY},
+				// Bottom Right
+				C4: { X: rightAbsX,Y: bottomAbsY},
+				// Bound Size
+				Size: { X: absXSize, Y: absYSize },
+				LastChartedMousePos: lastChartedMousePos
+			});
 
-				boundEnterRef.current.Fire();
-				return true;
-			} else if (!inBounds && prevWithinBounds) {
-				boundExitRef.current.Fire();
-				return false;
-			}
+			boundEnterRef.current.Fire();
+			return true;
+		} else if (!inBounds && prevWithinBounds) {
+			boundExitRef.current.Fire();
+			return false;
+		}
 
-			return prevWithinBounds;
-		});
+		return prevWithinBounds;
+	});
 
 	},[
 		topMostOnly,
