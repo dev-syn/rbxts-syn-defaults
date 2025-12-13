@@ -2,12 +2,44 @@ import { ComponentPropsWithRef, PropsWithChildren, PropsWithRef, Ref, useEffect,
 import { createPortal } from '@rbxts/react-roblox';
 import { ContextMenuRoot } from '../misc/ContextMenuRoot';
 import React from '@rbxts/react';
-import { Players, RunService, StarterGui } from '@rbxts/services';
-import { getPlayerGui } from '../helpers/utilities';
+import { Players, RunService } from '@rbxts/services';
 
 interface ContextMenuProps extends PropsWithChildren,
 Partial<ComponentPropsWithRef<'scrollingframe'>> {
 	triggerNode?: GuiObject;
+}
+
+function isTriggerVisible(trigger: GuiObject): [boolean,ScrollingFrame | undefined] {
+	let rootUI: PlayerGui | CoreGui;
+	if (RunService.IsStudio()) rootUI = game.GetService("CoreGui");
+	else rootUI = Players.LocalPlayer.FindFirstChild("PlayerGui") as PlayerGui;
+	
+	let parentScrollingFrame: ScrollingFrame | undefined;
+	let currentParent = trigger.Parent;
+
+	while (currentParent && currentParent !== rootUI) {
+		if (currentParent.IsA("ScrollingFrame")) {
+			parentScrollingFrame = currentParent;
+			break;
+		}
+		currentParent = currentParent.Parent;
+	}
+	
+	if (!parentScrollingFrame) return [true,undefined];
+
+	const parentFrame = parentScrollingFrame!;
+
+	const parentTopY = parentFrame.AbsolutePosition.Y;
+	const parentBottomY = parentTopY + parentFrame.AbsoluteSize.Y;
+
+	const triggerTopY = trigger.AbsolutePosition.Y;
+	const triggerBottomY = triggerTopY + trigger.AbsoluteSize.Y;
+
+	const isOutOfView =
+		triggerBottomY <= parentTopY ||
+		triggerTopY >= parentBottomY;
+
+	return [!isOutOfView,parentScrollingFrame];
 }
 
 export function ContextMenuPortal(props: ContextMenuProps) {
@@ -23,7 +55,6 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 
 	useEffect(() => {
 		if (!ref.current || !triggerNode) return;
-		print(`Ref current: ${ref.current}, triggerNode: ${triggerNode}`);
 
 		const updatePosition = () => {
 			const menu = ref.current;
@@ -33,18 +64,14 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 			
 			const viewportSize = game.Workspace.CurrentCamera!.ViewportSize;
 
-			const absSizeY = triggerNode.AbsoluteSize.Y;
-			const absPosY = triggerNode.AbsolutePosition.Y;
-			const yAnchor = triggerNode.AnchorPoint.Y;
+			const triggerTopLeftX = triggerNode.AbsolutePosition.X - (triggerNode.AbsoluteSize.X * triggerNode.AnchorPoint.X);
+			const triggerTopLeftY = triggerNode.AbsolutePosition.Y - (triggerNode.AbsoluteSize.Y * triggerNode.AnchorPoint.Y);
 
-			const topAbsPosY = math.ceil(absPosY - absSizeY * yAnchor);
-			const leftAbsPosX = triggerNode.AbsolutePosition.X - math.ceil(triggerNode.AbsoluteSize.X * triggerNode.AnchorPoint.X);
+			const isOverHalfX = triggerNode.AbsolutePosition.X > viewportSize.X / 2;
+			const isOverHalfY = triggerNode.AbsolutePosition.Y > viewportSize.Y / 2;
 
-			const isSizeOverHalfX = leftAbsPosX > viewportSize.X / 2;
-			const isSizeOverHalfY = absPosY > viewportSize.Y / 2;
-
-			const xOffset = isSizeOverHalfX ? leftAbsPosX - menuSize.X : leftAbsPosX + triggerNode.AbsoluteSize.X;
-			const yOffset = isSizeOverHalfY ? topAbsPosY - menuSize.Y : topAbsPosY;
+			const xOffset = isOverHalfX ? triggerTopLeftX - menuSize.X : triggerTopLeftX + triggerNode.AbsoluteSize.X;
+			const yOffset = isOverHalfY ? triggerTopLeftY - menuSize.Y : triggerTopLeftY + triggerNode.AbsoluteSize.Y;
 
 			setPosition(UDim2.fromOffset(xOffset,yOffset));
 		};
@@ -58,7 +85,7 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 			posConn.Disconnect();
 			sizeConn.Disconnect();
 		};
-	},[triggerNode,size,children]);
+	},[triggerNode,size]);
 
 	useEffect(() => {
 		const layout = listLayoutRef.current;
@@ -82,17 +109,30 @@ export function ContextMenuPortal(props: ContextMenuProps) {
 			return;
 		}
 
-		let parentScrollingFrame: ScrollingFrame | undefined;
-		let currentParent = triggerNode.Parent;
+		const [initialVisible,parentScrollingFrame] = isTriggerVisible(triggerNode);
+		setIsVisible(initialVisible);
 
-		let localPlayerGui: Promise<PlayerGui> = getPlayerGui();
-		
-		const status = localPlayerGui.getStatus();
+		const checkVisibility = () => {
+			const [newVisible, ] = isTriggerVisible(triggerNode);
 
-		
+			if (newVisible !== isVisible) setIsVisible(newVisible);
+		};
+
+		checkVisibility();
+
+		let scrollConn: RBXScriptConnection | undefined;
+
+		if (parentScrollingFrame) scrollConn = parentScrollingFrame.GetPropertyChangedSignal("CanvasPosition").Connect(checkVisibility);
+
+		const posConn = triggerNode.GetPropertyChangedSignal("AbsolutePosition").Connect(checkVisibility);
+
+		return () => {
+			scrollConn?.Disconnect();
+			posConn.Disconnect();
 		}
-		
-	},[]);
+	},[triggerNode,isVisible]);
+
+	if (!triggerNode || !isVisible) return undefined;
 
 	const nativeProps = {...props};
 	delete nativeProps.triggerNode;
