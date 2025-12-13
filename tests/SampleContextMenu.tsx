@@ -15,6 +15,9 @@ export function SampleContextMenu() {
 			/>
 			<ContextMenu
 				menuId={CONTEXT_MENU_ID}
+				config={{
+					fullyVisibleOnly: true
+				}}
 			>
 				<ContextMenuItem
 					id='item_1'
