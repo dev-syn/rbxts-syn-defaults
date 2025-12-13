@@ -93,32 +93,25 @@ export function useBoundCheck(
 		const topAbsY: number = owner.AbsolutePosition.Y - (owner.AbsoluteSize.Y * owner.AnchorPoint.Y);
 		const bottomAbsY: number = topAbsY + absYSize;
 
-		let withinX: boolean = false;
-		let withinY: boolean = false;
 		let inBounds: boolean = false;
 
-		let lastChartedMousePos: Vector2 | undefined = undefined;
-		let topCheckingPoint: Vector2 | undefined = undefined;
+		let rawMousePos: Vector2 | undefined;
+		let adjustedMousePos: Vector2 | undefined;
 
 		const preferredInput = UserInputService.PreferredInput;
 		if (preferredInput === Enum.PreferredInput.KeyboardAndMouse) {
-			const mousePos = UserInputService.GetMouseLocation();
-			if (!mousePos) return;
+			rawMousePos = UserInputService.GetMouseLocation();
 
 			const [topLeft,_] = GuiService.GetGuiInset();
-			const adjustedMousePos = new Vector2(mousePos.X - topLeft.X,mousePos.Y - topLeft.Y);
+			adjustedMousePos = rawMousePos.sub(topLeft);
 
 			// Checking the bounds
-			withinX = adjustedMousePos.X >= leftAbsX && adjustedMousePos.X <= rightAbsX;
-			withinY = adjustedMousePos.Y >= topAbsY && adjustedMousePos.Y <= bottomAbsY;
+			const withinX = adjustedMousePos.X >= leftAbsX && adjustedMousePos.X <= rightAbsX;
+			const withinY = adjustedMousePos.Y >= topAbsY && adjustedMousePos.Y <= bottomAbsY;
 			inBounds = withinX && withinY;
-
-			lastChartedMousePos = adjustedMousePos;
-			topCheckingPoint = adjustedMousePos;
 		} else {
 			inBounds = owner.GuiState === Enum.GuiState.Press || owner.GuiState === Enum.GuiState.Hover ?
 				true : false;
-			topCheckingPoint = new Vector2(leftAbsX,topAbsY);
 		}
 
 		setWithinBounds(prevWithinBounds => {
@@ -129,12 +122,27 @@ export function useBoundCheck(
 		}
 
 		// TopMostOnly check
-		if (topMostOnly && inBounds) {
+		if (topMostOnly && inBounds && rawMousePos) {
 			const uis: GuiObject[] = PlayerGui.GetGuiObjectsAtPosition(
-				topCheckingPoint.X,
-				topCheckingPoint.Y
+				rawMousePos.X,
+				rawMousePos.Y
 			);
-			if (uis.size() === 0 || uis[0] !== owner) inBounds = false;
+
+			let isTop = false;
+
+			for (const obj of uis) {
+				if (obj === owner || obj.IsDescendantOf(owner)) {
+					isTop = true;
+					break;
+				}
+
+				if (obj.Visible && (obj.BackgroundTransparency < 1 || obj.IsA("GuiButton"))) {
+					isTop = false;
+					break;
+				}
+			}
+
+			if (!isTop) inBounds = false;
 		}
 
 		if (inBounds && !prevWithinBounds) {
@@ -149,26 +157,35 @@ export function useBoundCheck(
 				C4: { X: rightAbsX,Y: bottomAbsY},
 				// Bound Size
 				Size: { X: absXSize, Y: absYSize },
-				LastChartedMousePos: lastChartedMousePos
+				LastChartedMousePos: adjustedMousePos
 			});
-
 			boundEnterRef.current.Fire();
 			return true;
 		} else if (!inBounds && prevWithinBounds) {
 			boundExitRef.current.Fire();
 			return false;
+		} else if (inBounds && prevWithinBounds && adjustedMousePos) {
+			// Set the bounds to be the same and only update the last charted position
+			setBounds({
+				// Top Left
+				C1: bounds.C1,
+				// Top Right
+				C2: bounds.C2,
+				// Bottom Left
+				C3: bounds.C3,
+				// Bottom Right
+				C4: bounds.C4,
+				// Bound Size
+				Size: { X: bounds.Size.X, Y: bounds.Size.Y },
+				LastChartedMousePos: adjustedMousePos
+			});
 		}
-
 		return prevWithinBounds;
 	});
 
 	},[
 		topMostOnly,
-		considerVisibility,
-		instRef.current,
-		instRef.current?.AbsoluteSize,
-		instRef.current?.AbsolutePosition,
-		instRef.current?.AbsoluteRotation
+		considerVisibility
 	]);
 
 	useEffect((() => {
@@ -186,7 +203,7 @@ export function useBoundCheck(
 			boundEnterRef.current.Destroy();
 			boundExitRef.current.Destroy();
 		}
-	}),[queryBounds,instRef.current]);
+	}),[queryBounds]);
 
 	return {
 		withinBounds,
