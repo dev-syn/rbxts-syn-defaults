@@ -156,7 +156,16 @@ export function useToolTip(
 			if (delayThread && coroutine.status(delayThread) === 'suspended') task.cancel(delayThread);
 			if (renderConn) renderConn.Disconnect();
 		};
-	},[withinBounds,bounds,contentSize,delayMs,content,config.anchorPos,positioningMode]);
+	},[
+		withinBounds, // Was being in the bounds changed?
+		bounds, // Has the bounds themself been updated?
+		contentSize, // Has the ToolTip content size been updated?
+		delayMs, // Has the delay changed?
+		content, // Has the content itself changed?
+		config.anchorPos, // Has the anchor position of this tool tip been changed?
+		positioningMode, // Has the positioningMode been changed?,
+		UserInputService.PreferredInput // Has the PreferredInput changed?
+	]);
 
 	return toolTipState;
 }
