@@ -90,11 +90,13 @@ export function useToolTip(
 		let delayThread: thread | undefined;
 		let renderConn: RBXScriptConnection | undefined;
 
+		let controlledPositioningMode: ToolTipConfig['positioningMode'] = positioningMode;
+
 		const showToolTip = () => {
 			const anchorPos = config.anchorPos ?? new Vector2(0.5,0);
 
 			const anchorPoint = new Vector2(1 - anchorPos.X,1 - anchorPos.Y);
-			if (positioningMode === ToolTipPosition.MouseBased) {
+			if (controlledPositioningMode === ToolTipPosition.MouseBased) {
 				const [topLeft,_] = GuiService.GetGuiInset();
 
 				renderConn = RunService.RenderStepped.Connect(() => {
@@ -106,14 +108,14 @@ export function useToolTip(
 
 					setPosBinding(UDim2.fromOffset(x,y));
 				});
-			} else if (positioningMode === ToolTipPosition.TargetRelative) {
+			} else if (controlledPositioningMode === ToolTipPosition.TargetRelative) {
 
 				// Calculate TargetRelative position using anchor Math
 				const xPos = (bounds.C1.X + anchorPos.X * bounds.Size.X) - contentSize.X * anchorPoint.X;
 				const yPos = (bounds.C1.Y + anchorPos.Y * bounds.Size.Y) - contentSize.Y * anchorPoint.Y;
 
 				setPosBinding(UDim2.fromOffset(xPos,yPos));
-			} else { error(`Unknown ToolTipPosition.${positioningMode}? This member does not exist.`); }
+			} else { error(`Unknown ToolTipPosition.${controlledPositioningMode}? This member does not exist.`); }
 
       setToolTipState({
         isShowing: true,
@@ -124,6 +126,8 @@ export function useToolTip(
       });
     };
 
+		const preferredInput = UserInputService.PreferredInput;
+
 		if (delayMs > 0) {
 			delayThread = coroutine.create(() => {
 				const delaySecs = delayMs / 1000;
@@ -132,6 +136,16 @@ export function useToolTip(
 				while (elapsed < delaySecs) {
 					const [dt] = RunService.Heartbeat.Wait();
 					elapsed += dt;
+				}
+
+				if (
+					controlledPositioningMode === ToolTipPosition.MouseBased &&
+					preferredInput === Enum.PreferredInput.Touch ||
+					preferredInput === Enum.PreferredInput.Gamepad
+				) {
+					// Mouse Based is not supported on Touch or Gamepad input types
+					if (RunService.IsStudio()) warn(`ToolTipPosition.MouseBased is only allowed when the preferred input is 'KeyboardAndMouse'.`);
+					controlledPositioningMode = ToolTipPosition.TargetRelative;
 				}
 				showToolTip();
 			});
