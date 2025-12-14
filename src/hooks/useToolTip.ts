@@ -2,6 +2,7 @@ import { Binding, useBinding, useEffect, useState } from '@rbxts/react';
 import { BoundCheckOptions, useBoundCheck } from './useBoundCheck';
 import { GuiService, RunService, UserInputService } from '@rbxts/services';
 import { calculateContentSize, CalculateContentProps } from '../helpers/calculateContentSize';
+import { getGuiInset, getSafeZoneSize, getViewportSize } from '../helpers/utlilities';
 
 interface ToolTipPosition {
 	TargetRelative: "TargetRelative",
@@ -10,6 +11,19 @@ interface ToolTipPosition {
 export const ToolTipPosition: ToolTipPosition = {
 	TargetRelative: "TargetRelative",
 	MouseBased: "MouseBased"
+};
+
+interface GuiSide {
+	Left: "Left",
+	Top: "Top",
+	Right: "Right",
+	Bottom: "Bottom"
+}
+const GuiSide: GuiSide = {
+	Left: 'Left',
+	Top: 'Top',
+	Right: 'Right',
+	Bottom: 'Bottom'
 };
 
 export interface ToolTipConfig {
@@ -38,7 +52,7 @@ const DEFAULT_BOUND_OPTIONS: BoundCheckOptions = {
 	considerVisibility: true
 };
 
-const INITIAL_SIZE = new Vector2(0,0);
+const INITIAL_SIZE = Vector2.zero;
 export function useToolTip(
 	targetRef: React.RefObject<GuiObject | undefined>,
 	config: ToolTipConfig,
@@ -95,7 +109,6 @@ export function useToolTip(
 		const showToolTip = () => {
 			const anchorPos = config.anchorPos ?? new Vector2(0.5,0);
 
-			const anchorPoint = new Vector2(1 - anchorPos.X,1 - anchorPos.Y);
 			if (controlledPositioningMode === ToolTipPosition.MouseBased) {
 				const [topLeft,_] = GuiService.GetGuiInset();
 
@@ -109,10 +122,85 @@ export function useToolTip(
 					setPosBinding(UDim2.fromOffset(x,y));
 				});
 			} else if (controlledPositioningMode === ToolTipPosition.TargetRelative) {
+				const anchorPoint = new Vector2(1 - anchorPos.X,1 - anchorPos.Y);
+
+				const safeZoneSize = getSafeZoneSize();
+				const { topLeft,botRight } = getGuiInset();
+
+				const isSideOutOfBounds = (guiSide: keyof typeof GuiSide,xPos: number,yPos: number) => {
+					switch(guiSide) {
+						case GuiSide.Left:
+							const isLeftOutOfView = xPos - contentSize.X < topLeft.X;
+							return isLeftOutOfView;
+						case GuiSide.Top:
+							const isTopOutOfView = yPos - contentSize.Y < topLeft.Y;
+							return isTopOutOfView;
+						case GuiSide.Right:
+							const isRightOutOfView = xPos + contentSize.X > safeZoneSize.X;
+							return isRightOutOfView;
+						case GuiSide.Bottom:
+							const isBotOutOfView = yPos + contentSize.Y > safeZoneSize.Y;
+							return isBotOutOfView;
+						default:
+							return error(`Unknown GuiSide: ${guiSide}`);
+					}
+				};
 
 				// Calculate TargetRelative position using anchor Math
-				const xPos = (bounds.C1.X + anchorPos.X * bounds.Size.X) - contentSize.X * anchorPoint.X;
-				const yPos = (bounds.C1.Y + anchorPos.Y * bounds.Size.Y) - contentSize.Y * anchorPoint.Y;
+				let xPos = (bounds.C1.X + anchorPos.X * bounds.Size.X) - contentSize.X * anchorPoint.X;
+				let yPos = (bounds.C1.Y + anchorPos.Y * bounds.Size.Y) - contentSize.Y * anchorPoint.Y;
+
+				if (anchorPos.X > 0.5) {
+					// Check if the right is out of bounds
+					if (isSideOutOfBounds(GuiSide.Right,xPos,yPos)) {
+						const adjustedX =
+						(bounds.C1.X + (1 - anchorPos.X) * bounds.Size.X) -
+						contentSize.X * (1 - anchorPoint.X);
+
+						if (isSideOutOfBounds(GuiSide.Left,adjustedX,yPos)) {
+							// Fallback to force on screen
+							xPos = math.clamp(xPos,topLeft.X + contentSize.X,safeZoneSize.X - contentSize.X);
+						} else xPos = adjustedX;
+					}
+				} else if (anchorPos.X < 0.5) {
+					// Check if the left is out of bounds
+					if (isSideOutOfBounds(GuiSide.Left,xPos,yPos)) {
+						const adjustedX =
+						(bounds.C1.X + (1 - anchorPos.X) * bounds.Size.X) -
+						contentSize.X * (1 - anchorPoint.X);
+
+						if (isSideOutOfBounds(GuiSide.Right,adjustedX,yPos)) {
+							// Fallback to force on screen
+							xPos = math.clamp(xPos,topLeft.X + contentSize.X,safeZoneSize.X - contentSize.X);
+						} else xPos = adjustedX;
+					}
+				}
+
+				if (anchorPos.Y > 0.5) {
+					// Check if bottom is out of bounds
+					if (isSideOutOfBounds(GuiSide.Bottom,xPos,yPos)) {
+						const adjustedY =
+						(bounds.C1.Y + (1 - anchorPos.Y) * bounds.Size.Y) -
+						contentSize.Y * (1 - anchorPoint.Y);
+
+						if (isSideOutOfBounds(GuiSide.Top,xPos,adjustedY)) {
+							// Fallback to force on screen
+							yPos = math.clamp(yPos,topLeft.Y + contentSize.Y,safeZoneSize.Y - contentSize.Y);
+						} else yPos = adjustedY;
+					}
+				} else if (anchorPos.Y < 0.5) {
+					// Check if the top is out of bounds
+					if (isSideOutOfBounds(GuiSide.Top,xPos,yPos)) {
+						const adjustedY =
+						(bounds.C1.Y + (1 - anchorPos.Y) * bounds.Size.Y) -
+						contentSize.Y * (1 - anchorPoint.Y);
+
+						if (isSideOutOfBounds(GuiSide.Bottom,xPos,adjustedY)) {
+							// Fallback to force on screen
+							yPos = math.clamp(yPos,topLeft.Y + contentSize.Y,safeZoneSize.Y - contentSize.Y);
+						} else yPos = adjustedY;
+					}
+				}
 
 				setPosBinding(UDim2.fromOffset(xPos,yPos));
 			} else { error(`Unknown ToolTipPosition.${controlledPositioningMode}? This member does not exist.`); }
@@ -150,7 +238,19 @@ export function useToolTip(
 				showToolTip();
 			});
 			coroutine.resume(delayThread);
-		} else showToolTip();
+		} else {
+			if (
+					controlledPositioningMode === ToolTipPosition.MouseBased &&
+					preferredInput === Enum.PreferredInput.Touch ||
+					preferredInput === Enum.PreferredInput.Gamepad
+				)
+				{
+					// Mouse Based is not supported on Touch or Gamepad input types
+					if (RunService.IsStudio()) warn(`ToolTipPosition.MouseBased is only allowed when the preferred input is 'KeyboardAndMouse'.`);
+					controlledPositioningMode = ToolTipPosition.TargetRelative;
+				}
+				showToolTip();
+		}
 
 		return () => {
 			if (delayThread && coroutine.status(delayThread) === 'suspended') task.cancel(delayThread);
