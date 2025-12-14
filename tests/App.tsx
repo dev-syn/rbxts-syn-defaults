@@ -8,11 +8,11 @@ import { SampleContextMenu } from './SampleContextMenu';
 export const App = () => {
 	
 	return (
-		<screengui ResetOnSpawn={false} DisplayOrder={10}>
+		<screengui ResetOnSpawn={false} DisplayOrder={10} IgnoreGuiInset={true}>
 			<scrollingframe
 				AnchorPoint={new Vector2(0.5,0.5)}
 				Size={new UDim2(0.65,0,0.55,0)}
-				CanvasSize={new UDim2(0,0,1.5,0)}
+				AutomaticCanvasSize={Enum.AutomaticSize.Y}
 				Position={new UDim2(0.5,0,0.5,0)}
 			>
 				<uigridlayout
