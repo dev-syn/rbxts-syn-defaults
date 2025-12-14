@@ -47,7 +47,8 @@ export function ToolTipDisplay({ data,imageContent,calculateContentProps }: Tool
 			Size={UDim2.fromScale(1,1)}
 			BackgroundTransparency={1}
 			TextColor3={new Color3(1,1,1)}
-			TextSize={16}
+			TextSize={calculateContentProps.textSize}
+			RichText={calculateContentProps.richText}
 			TextWrapped={true}
 			TextXAlignment={Enum.TextXAlignment.Center}
 			TextYAlignment={Enum.TextYAlignment.Center}
