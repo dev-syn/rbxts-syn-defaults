@@ -168,15 +168,15 @@ export function useBoundCheck(
 			// Set the bounds to be the same and only update the last charted position
 			setBounds({
 				// Top Left
-				C1: bounds.C1,
+				C1: { X: leftAbsX,Y: topAbsY},
 				// Top Right
-				C2: bounds.C2,
+				C2: { X: rightAbsX,Y: topAbsY},
 				// Bottom Left
-				C3: bounds.C3,
+				C3: { X: leftAbsX,Y: bottomAbsY},
 				// Bottom Right
-				C4: bounds.C4,
+				C4: { X: rightAbsX,Y: bottomAbsY},
 				// Bound Size
-				Size: { X: bounds.Size.X, Y: bounds.Size.Y },
+				Size: { X: absXSize, Y: absYSize },
 				LastChartedMousePos: adjustedMousePos
 			});
 		}
