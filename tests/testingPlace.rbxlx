@@ -73521,7 +73521,7 @@ local function useBoundCheck(instRef, options)
 			ancestorSGRef.current = ancestor
 		end
 	end, { instRef.current })
-	local _exp = function()
+	local queryBounds = useCallback(function()
 		local owner = instRef.current
 		local ancestorSG = ancestorSGRef.current
 		-- Exit if neccessary services/objects are missing
@@ -73533,23 +73533,29 @@ local function useBoundCheck(instRef, options)
 		if not owner or not ancestorSG or not PlayerGui then
 			return nil
 		end
-		-- As of v0.1.0, bound check queries will only be calculated when a mouse position is available.
-		local mousePos = UserInputService:GetMouseLocation()
-		if not mousePos then
-			return nil
-		end
+		-- The size of the bounds element
 		local absXSize = owner.AbsoluteSize.X
 		local absYSize = owner.AbsoluteSize.Y
-		local topLeft, _ = GuiService:GetGuiInset()
-		local leftAbsX = owner.AbsolutePosition.X
+		-- The positioning points of the bounds element
+		local leftAbsX = owner.AbsolutePosition.X - (owner.AbsoluteSize.X * owner.AnchorPoint.X)
 		local rightAbsX = leftAbsX + absXSize
-		local topAbsY = owner.AbsolutePosition.Y
+		local topAbsY = owner.AbsolutePosition.Y - (owner.AbsoluteSize.Y * owner.AnchorPoint.Y)
 		local bottomAbsY = topAbsY + absYSize
-		local adjustedMousePos = Vector2.new(mousePos.X - topLeft.X, mousePos.Y - topLeft.Y)
-		-- Checking the bounds
-		local withinX = adjustedMousePos.X >= leftAbsX and adjustedMousePos.X <= rightAbsX
-		local withinY = adjustedMousePos.Y >= topAbsY and adjustedMousePos.Y <= bottomAbsY
-		local inBounds = withinX and withinY
+		local inBounds = false
+		local rawMousePos
+		local adjustedMousePos
+		local preferredInput = UserInputService.PreferredInput
+		if preferredInput == Enum.PreferredInput.KeyboardAndMouse then
+			rawMousePos = UserInputService:GetMouseLocation()
+			local topLeft, _ = GuiService:GetGuiInset()
+			adjustedMousePos = rawMousePos - topLeft
+			-- Checking the bounds
+			local withinX = adjustedMousePos.X >= leftAbsX and adjustedMousePos.X <= rightAbsX
+			local withinY = adjustedMousePos.Y >= topAbsY and adjustedMousePos.Y <= bottomAbsY
+			inBounds = withinX and withinY
+		else
+			inBounds = if owner.GuiState == Enum.GuiState.Press or owner.GuiState == Enum.GuiState.Hover then true else false
+		end
 		setWithinBounds(function(prevWithinBounds)
 			-- Visibility check
 			if considerVisibility and not owner.Visible then
@@ -73559,9 +73565,20 @@ local function useBoundCheck(instRef, options)
 				return false
 			end
 			-- TopMostOnly check
-			if topMostOnly and inBounds then
-				local uis = PlayerGui:GetGuiObjectsAtPosition(mousePos.X, mousePos.Y)
-				if #uis == 0 or uis[1] ~= owner then
+			if topMostOnly and inBounds and rawMousePos then
+				local uis = PlayerGui:GetGuiObjectsAtPosition(rawMousePos.X, rawMousePos.Y)
+				local isTop = false
+				for _, obj in uis do
+					if obj == owner or obj:IsDescendantOf(owner) then
+						isTop = true
+						break
+					end
+					if obj.Visible and (obj.BackgroundTransparency < 1 or obj:IsA("GuiButton")) then
+						isTop = false
+						break
+					end
+				end
+				if not isTop then
 					inBounds = false
 				end
 			end
@@ -73594,24 +73611,35 @@ local function useBoundCheck(instRef, options)
 			elseif not inBounds and prevWithinBounds then
 				boundExitRef.current:Fire()
 				return false
+			elseif inBounds and prevWithinBounds and adjustedMousePos then
+				-- Set the bounds to be the same and only update the last charted position
+				setBounds({
+					C1 = {
+						X = leftAbsX,
+						Y = topAbsY,
+					},
+					C2 = {
+						X = rightAbsX,
+						Y = topAbsY,
+					},
+					C3 = {
+						X = leftAbsX,
+						Y = bottomAbsY,
+					},
+					C4 = {
+						X = rightAbsX,
+						Y = bottomAbsY,
+					},
+					Size = {
+						X = absXSize,
+						Y = absYSize,
+					},
+					LastChartedMousePos = adjustedMousePos,
+				})
 			end
 			return prevWithinBounds
 		end)
-	end
-	local _exp_1 = instRef.current
-	local _result = instRef.current
-	if _result ~= nil then
-		_result = _result.AbsoluteSize
-	end
-	local _result_1 = instRef.current
-	if _result_1 ~= nil then
-		_result_1 = _result_1.AbsolutePosition
-	end
-	local _result_2 = instRef.current
-	if _result_2 ~= nil then
-		_result_2 = _result_2.AbsoluteRotation
-	end
-	local queryBounds = useCallback(_exp, { topMostOnly, considerVisibility, _exp_1, _result, _result_1, _result_2 })
+	end, { topMostOnly, considerVisibility })
 	useEffect((function()
 		local instanceID = if instRef.current then tostring(instRef.current) else "N/A"
 		local connectionID = `UIPresets_BoundCheck_{instanceID}`
@@ -73621,7 +73649,7 @@ local function useBoundCheck(instRef, options)
 			boundEnterRef.current:Destroy()
 			boundExitRef.current:Destroy()
 		end
-	end), { queryBounds, instRef.current })
+	end), { queryBounds })
 	return {
 		withinBounds = withinBounds,
 		bounds = bounds,
@@ -73805,15 +73833,24 @@ local GuiService = _services.GuiService
 local RunService = _services.RunService
 local UserInputService = _services.UserInputService
 local calculateContentSize = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "helpers", "calculateContentSize").calculateContentSize
+local _utlilities = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "helpers", "utlilities")
+local getGuiInset = _utlilities.getGuiInset
+local getSafeZoneSize = _utlilities.getSafeZoneSize
 local ToolTipPosition = {
 	TargetRelative = "TargetRelative",
 	MouseBased = "MouseBased",
+}
+local GuiSide = {
+	Left = "Left",
+	Top = "Top",
+	Right = "Right",
+	Bottom = "Bottom",
 }
 local DEFAULT_BOUND_OPTIONS = {
 	topMostOnly = false,
 	considerVisibility = true,
 }
-local INITIAL_SIZE = Vector2.new(0, 0)
+local INITIAL_SIZE = Vector2.zero
 local function useToolTip(targetRef, config, textProps)
 	local _binding = config
 	local delayMs = _binding.delayMs
@@ -73868,10 +73905,10 @@ local function useToolTip(targetRef, config, textProps)
 		end
 		local delayThread
 		local renderConn
+		local controlledPositioningMode = positioningMode
 		local showToolTip = function()
 			local anchorPos = config.anchorPos or Vector2.new(0.5, 0)
-			local anchorPoint = Vector2.new(1 - anchorPos.X, 1 - anchorPos.Y)
-			if positioningMode == ToolTipPosition.MouseBased then
+			if controlledPositioningMode == ToolTipPosition.MouseBased then
 				local topLeft, _ = GuiService:GetGuiInset()
 				renderConn = RunService.RenderStepped:Connect(function()
 					local mousePos = UserInputService:GetMouseLocation()
@@ -73880,13 +73917,85 @@ local function useToolTip(targetRef, config, textProps)
 					local y = adjustedMousePos.Y - anchorPos.Y * contentSize.Y
 					setPosBinding(UDim2.fromOffset(x, y))
 				end)
-			elseif positioningMode == ToolTipPosition.TargetRelative then
+			elseif controlledPositioningMode == ToolTipPosition.TargetRelative then
+				local anchorPoint = Vector2.new(1 - anchorPos.X, 1 - anchorPos.Y)
+				local safeZoneSize = getSafeZoneSize()
+				local _binding_2 = getGuiInset()
+				local topLeft = _binding_2.topLeft
+				local botRight = _binding_2.botRight
+				local isSideOutOfBounds = function(guiSide, xPos, yPos)
+					repeat
+						if guiSide == (GuiSide.Left) then
+							local isLeftOutOfView = xPos - contentSize.X < topLeft.X
+							return isLeftOutOfView
+						end
+						if guiSide == (GuiSide.Top) then
+							local isTopOutOfView = yPos - contentSize.Y < topLeft.Y
+							return isTopOutOfView
+						end
+						if guiSide == (GuiSide.Right) then
+							local isRightOutOfView = xPos + contentSize.X > safeZoneSize.X
+							return isRightOutOfView
+						end
+						if guiSide == (GuiSide.Bottom) then
+							local isBotOutOfView = yPos + contentSize.Y > safeZoneSize.Y
+							return isBotOutOfView
+						end
+						return error(`Unknown GuiSide: {guiSide}`)
+					until true
+				end
 				-- Calculate TargetRelative position using anchor Math
 				local xPos = (bounds.C1.X + anchorPos.X * bounds.Size.X) - contentSize.X * anchorPoint.X
 				local yPos = (bounds.C1.Y + anchorPos.Y * bounds.Size.Y) - contentSize.Y * anchorPoint.Y
+				if anchorPos.X > 0.5 then
+					-- Check if the right is out of bounds
+					if isSideOutOfBounds(GuiSide.Right, xPos, yPos) then
+						local adjustedX = (bounds.C1.X + (1 - anchorPos.X) * bounds.Size.X) - contentSize.X * (1 - anchorPoint.X)
+						if isSideOutOfBounds(GuiSide.Left, adjustedX, yPos) then
+							-- Fallback to force on screen
+							xPos = math.clamp(xPos, topLeft.X + contentSize.X, safeZoneSize.X - contentSize.X)
+						else
+							xPos = adjustedX
+						end
+					end
+				elseif anchorPos.X < 0.5 then
+					-- Check if the left is out of bounds
+					if isSideOutOfBounds(GuiSide.Left, xPos, yPos) then
+						local adjustedX = (bounds.C1.X + (1 - anchorPos.X) * bounds.Size.X) - contentSize.X * (1 - anchorPoint.X)
+						if isSideOutOfBounds(GuiSide.Right, adjustedX, yPos) then
+							-- Fallback to force on screen
+							xPos = math.clamp(xPos, topLeft.X + contentSize.X, safeZoneSize.X - contentSize.X)
+						else
+							xPos = adjustedX
+						end
+					end
+				end
+				if anchorPos.Y > 0.5 then
+					-- Check if bottom is out of bounds
+					if isSideOutOfBounds(GuiSide.Bottom, xPos, yPos) then
+						local adjustedY = (bounds.C1.Y + (1 - anchorPos.Y) * bounds.Size.Y) - contentSize.Y * (1 - anchorPoint.Y)
+						if isSideOutOfBounds(GuiSide.Top, xPos, adjustedY) then
+							-- Fallback to force on screen
+							yPos = math.clamp(yPos, topLeft.Y + contentSize.Y, safeZoneSize.Y - contentSize.Y)
+						else
+							yPos = adjustedY
+						end
+					end
+				elseif anchorPos.Y < 0.5 then
+					-- Check if the top is out of bounds
+					if isSideOutOfBounds(GuiSide.Top, xPos, yPos) then
+						local adjustedY = (bounds.C1.Y + (1 - anchorPos.Y) * bounds.Size.Y) - contentSize.Y * (1 - anchorPoint.Y)
+						if isSideOutOfBounds(GuiSide.Bottom, xPos, adjustedY) then
+							-- Fallback to force on screen
+							yPos = math.clamp(yPos, topLeft.Y + contentSize.Y, safeZoneSize.Y - contentSize.Y)
+						else
+							yPos = adjustedY
+						end
+					end
+				end
 				setPosBinding(UDim2.fromOffset(xPos, yPos))
 			else
-				error(`Unknown ToolTipPosition.{positioningMode}? This member does not exist.`)
+				error(`Unknown ToolTipPosition.{controlledPositioningMode}? This member does not exist.`)
 			end
 			setToolTipState({
 				isShowing = true,
@@ -73896,6 +74005,7 @@ local function useToolTip(targetRef, config, textProps)
 				calculatedSize = contentSize,
 			})
 		end
+		local preferredInput = UserInputService.PreferredInput
 		if delayMs > 0 then
 			delayThread = coroutine.create(function()
 				local delaySecs = delayMs / 1000
@@ -73904,10 +74014,24 @@ local function useToolTip(targetRef, config, textProps)
 					local dt = RunService.Heartbeat:Wait()
 					elapsed += dt
 				end
+				if controlledPositioningMode == ToolTipPosition.MouseBased and preferredInput == Enum.PreferredInput.Touch or preferredInput == Enum.PreferredInput.Gamepad then
+					-- Mouse Based is not supported on Touch or Gamepad input types
+					if RunService:IsStudio() then
+						warn(`ToolTipPosition.MouseBased is only allowed when the preferred input is 'KeyboardAndMouse'.`)
+					end
+					controlledPositioningMode = ToolTipPosition.TargetRelative
+				end
 				showToolTip()
 			end)
 			coroutine.resume(delayThread)
 		else
+			if controlledPositioningMode == ToolTipPosition.MouseBased and preferredInput == Enum.PreferredInput.Touch or preferredInput == Enum.PreferredInput.Gamepad then
+				-- Mouse Based is not supported on Touch or Gamepad input types
+				if RunService:IsStudio() then
+					warn(`ToolTipPosition.MouseBased is only allowed when the preferred input is 'KeyboardAndMouse'.`)
+				end
+				controlledPositioningMode = ToolTipPosition.TargetRelative
+			end
 			showToolTip()
 		end
 		return function()
@@ -73918,7 +74042,7 @@ local function useToolTip(targetRef, config, textProps)
 				renderConn:Disconnect()
 			end
 		end
-	end, { withinBounds, bounds, contentSize, delayMs, content, config.anchorPos, positioningMode })
+	end, { withinBounds, bounds, contentSize, delayMs, content, config.anchorPos, positioningMode, UserInputService.PreferredInput })
 	return toolTipState
 end
 return {
@@ -74093,10 +74217,11 @@ local App = function()
 	return React.createElement("screengui", {
 		ResetOnSpawn = false,
 		DisplayOrder = 10,
+		IgnoreGuiInset = true,
 	}, React.createElement("scrollingframe", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Size = UDim2.new(0.65, 0, 0.55, 0),
-		CanvasSize = UDim2.new(0, 0, 1.5, 0),
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		Position = UDim2.new(0.5, 0, 0.5, 0),
 	}, React.createElement("uigridlayout", {
 		CellSize = UDim2.new(0, 200, 0, 200),
@@ -74275,7 +74400,8 @@ local function ToolTipDisplay(_param)
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
 		TextColor3 = Color3.new(1, 1, 1),
-		TextSize = 16,
+		TextSize = calculateContentProps.textSize,
+		RichText = calculateContentProps.richText,
 		TextWrapped = true,
 		TextXAlignment = Enum.TextXAlignment.Center,
 		TextYAlignment = Enum.TextYAlignment.Center,
@@ -74463,7 +74589,6 @@ local function ContextMenu(props)
 	local itemIds = _binding.itemIds
 	local handleMenuOpen = useCallback(function(menuId, node)
 		if open then
-			print(`Closing context menu: {menuId}`)
 			setOpen(false)
 			setActiveTrigger(nil)
 			return nil
@@ -74471,7 +74596,6 @@ local function ContextMenu(props)
 		if node then
 			setActiveTrigger(node)
 		end
-		print(`Opening context menu: {menuId}`)
 		setOpen(true)
 	end, { open })
 	useEffect(function()
@@ -74485,12 +74609,17 @@ local function ContextMenu(props)
 	local nativeProps = _object
 	nativeProps.menuId = nil
 	nativeProps.children = nil
+	nativeProps.config = nil
 	local _condition = open
 	if _condition then
 		local _attributes = table.clone(nativeProps)
 		setmetatable(_attributes, nil)
 		_attributes.key = `ContextMenu-{menuId}`
 		_attributes.triggerNode = activeTrigger
+		_attributes.onClose = function()
+			return setOpen(false)
+		end
+		_attributes.config = props.config
 		_condition = React.createElement(ContextMenuPortal, _attributes, children)
 	end
 	return React.createElement(ContextMenuContext.Provider, {
@@ -74703,8 +74832,8 @@ local function SampleToolTip(_param)
 	local btnToolTip = useToolTip(testBtnRef, {
 		content = "A tooltip testing description.",
 		delayMs = 0,
-		positioningMode = ToolTipPosition.MouseBased,
-		anchorPos = Vector2.new(0.5, 1.25),
+		positioningMode = ToolTipPosition.TargetRelative,
+		anchorPos = Vector2.new(0.5, 1.05),
 	}, _calculateProps)
 	return React.createElement(React.Fragment, nil, React.createElement("textbutton", {
 		ref = testBtnRef,
@@ -74967,18 +75096,62 @@ local useState = _react.useState
 local createPortal = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react-roblox").createPortal
 local ContextMenuRoot = TS.import(script, game:GetService("ReplicatedStorage"), "syn-defaults", "misc", "ContextMenuRoot").ContextMenuRoot
 local React = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "react")
+local _services = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services")
+local Players = _services.Players
+local RunService = _services.RunService
+local function applyDefaultConfig(config)
+	if not config then
+		config = {}
+	end
+	if config.fullyVisibleOnly == nil then
+		config.fullyVisibleOnly = false
+	end
+end
+local function isTriggerVisible(trigger, fullyVisibleOnly)
+	local rootUI
+	if RunService:IsStudio() then
+		rootUI = game:GetService("CoreGui")
+	else
+		rootUI = Players.LocalPlayer:FindFirstChild("PlayerGui")
+	end
+	local parentScrollingFrame
+	local currentParent = trigger.Parent
+	while currentParent and currentParent ~= rootUI do
+		if currentParent:IsA("ScrollingFrame") then
+			parentScrollingFrame = currentParent
+			break
+		end
+		currentParent = currentParent.Parent
+	end
+	if not parentScrollingFrame then
+		return { true, nil }
+	end
+	local parentFrame = parentScrollingFrame
+	local parentTopY = parentFrame.AbsolutePosition.Y
+	local parentBottomY = parentTopY + parentFrame.AbsoluteSize.Y
+	local triggerTopY = trigger.AbsolutePosition.Y
+	local triggerBottomY = triggerTopY + trigger.AbsoluteSize.Y
+	local isOutOfView
+	if fullyVisibleOnly then
+		isOutOfView = triggerTopY + 1e-2 < parentTopY or triggerBottomY - 1e-2 > parentBottomY
+	else
+		isOutOfView = triggerBottomY <= parentTopY or triggerTopY >= parentBottomY
+	end
+	return { not isOutOfView, parentScrollingFrame }
+end
 local function ContextMenuPortal(props)
+	applyDefaultConfig(props.config)
 	local triggerNode = props.triggerNode
 	local children = props.children
 	local ref = useRef(nil)
 	local listLayoutRef = useRef()
 	local position, setPosition = useState(UDim2.new(0, 0, 0, 0))
 	local size, setSize = useState(UDim2.new(0, 250, 0, 300))
+	local shouldRender, setShouldRender = useState(true)
 	useEffect(function()
 		if not ref.current or not triggerNode then
 			return nil
 		end
-		print(`Ref current: {ref.current}, triggerNode: {triggerNode}`)
 		local updatePosition = function()
 			local menu = ref.current
 			if not menu then
@@ -74986,15 +75159,27 @@ local function ContextMenuPortal(props)
 			end
 			local menuSize = menu.AbsoluteSize
 			local viewportSize = game.Workspace.CurrentCamera.ViewportSize
-			local absSizeY = triggerNode.AbsoluteSize.Y
-			local absPosY = triggerNode.AbsolutePosition.Y
-			local yAnchor = triggerNode.AnchorPoint.Y
-			local topAbsPosY = math.ceil(absPosY - absSizeY * yAnchor)
-			local leftAbsPosX = triggerNode.AbsolutePosition.X - math.ceil(triggerNode.AbsoluteSize.X * triggerNode.AnchorPoint.X)
-			local isSizeOverHalfX = leftAbsPosX > viewportSize.X / 2
-			local isSizeOverHalfY = absPosY > viewportSize.Y / 2
-			local xOffset = if isSizeOverHalfX then leftAbsPosX - menuSize.X else leftAbsPosX + triggerNode.AbsoluteSize.X
-			local yOffset = if isSizeOverHalfY then topAbsPosY - menuSize.Y else topAbsPosY
+			local triggerTopLeftX = triggerNode.AbsolutePosition.X - (triggerNode.AbsoluteSize.X * triggerNode.AnchorPoint.X)
+			local triggerTopLeftY = triggerNode.AbsolutePosition.Y - (triggerNode.AbsoluteSize.Y * triggerNode.AnchorPoint.Y)
+			local defaultX = triggerTopLeftX + triggerNode.AbsoluteSize.X
+			local defaultY = triggerTopLeftY
+			local xOffset
+			local yOffset
+			-- Horizontal Flip Check: Does the menu go past the right edge of the screen?
+			if defaultX + menuSize.X > viewportSize.X then
+				xOffset = triggerTopLeftX - menuSize.X
+			else
+				xOffset = defaultX
+			end
+			-- Vertical Flip Check: Does the menu go past the bottom edge of the screen?
+			if defaultY + menuSize.Y > viewportSize.Y then
+				yOffset = triggerTopLeftY - menuSize.Y
+			else
+				yOffset = defaultY
+			end
+			-- Clamp to prevent the menu from going off the left/top edges
+			xOffset = math.max(xOffset, 0)
+			yOffset = math.max(yOffset, 0)
 			setPosition(UDim2.fromOffset(xOffset, yOffset))
 		end
 		updatePosition()
@@ -75004,7 +75189,7 @@ local function ContextMenuPortal(props)
 			posConn:Disconnect()
 			sizeConn:Disconnect()
 		end
-	end, { triggerNode, size, children })
+	end, { triggerNode, size })
 	useEffect(function()
 		local layout = listLayoutRef.current
 		if not layout then
@@ -75020,10 +75205,65 @@ local function ContextMenuPortal(props)
 			return conn:Disconnect()
 		end
 	end, { children })
+	local _exp = function()
+		if not triggerNode then
+			props.onClose()
+			return nil
+		end
+		local _result = props.config
+		if _result ~= nil then
+			_result = _result.fullyVisibleOnly
+		end
+		local _binding = isTriggerVisible(triggerNode, _result)
+		local initialVisible = _binding[1]
+		local parentScrollingFrame = _binding[2]
+		setShouldRender(initialVisible)
+		if not initialVisible then
+			props.onClose()
+			return nil
+		end
+		local checkVisibility = function()
+			local _result_1 = props.config
+			if _result_1 ~= nil then
+				_result_1 = _result_1.fullyVisibleOnly
+			end
+			local _binding_1 = isTriggerVisible(triggerNode, _result_1)
+			local newVisible = _binding_1[1]
+			if not newVisible then
+				props.onClose()
+			end
+			if newVisible ~= shouldRender then
+				setShouldRender(newVisible)
+			end
+		end
+		local scrollConn
+		if parentScrollingFrame then
+			scrollConn = parentScrollingFrame:GetPropertyChangedSignal("CanvasPosition"):Connect(checkVisibility)
+		end
+		local posConn = triggerNode:GetPropertyChangedSignal("AbsolutePosition"):Connect(checkVisibility)
+		return function()
+			local _result_1 = scrollConn
+			if _result_1 ~= nil then
+				_result_1:Disconnect()
+			end
+			posConn:Disconnect()
+		end
+	end
+	local _exp_1 = props.onClose
+	local _result = props.config
+	if _result ~= nil then
+		_result = _result.fullyVisibleOnly
+	end
+	useEffect(_exp, { triggerNode, _exp_1, shouldRender, _result })
+	if not triggerNode or not shouldRender then
+		return nil
+	end
 	local _object = table.clone(props)
 	setmetatable(_object, nil)
 	local nativeProps = _object
 	nativeProps.triggerNode = nil
+	nativeProps.onClose = nil
+	nativeProps.config = nil
 	local _attributes = {
 		ref = ref,
 	}
@@ -75072,6 +75312,8 @@ return {
 					<Properties>
 						<Content name="LinkedSource"><null></null></Content>
 						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local UserInputService = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services").UserInputService
 local triggers = {}
 local conns = {}
 local openHandlers = {}
@@ -75111,11 +75353,24 @@ local function registerTrigger(menuId, node)
 			if processed then
 				return nil
 			end
-			if input.UserInputType == Enum.UserInputType.MouseButton2 then
-				local _menuId_1 = menuId
-				local _result = openHandlers[_menuId_1]
-				if _result ~= nil then
-					_result(menuId, node)
+			local preferredInput = UserInputService.PreferredInput
+			local inputType = input.UserInputType
+			local inputState = input.UserInputState
+			if preferredInput == Enum.PreferredInput.KeyboardAndMouse then
+				if inputType == Enum.UserInputType.MouseButton2 then
+					local _menuId_1 = menuId
+					local _result = openHandlers[_menuId_1]
+					if _result ~= nil then
+						_result(menuId, node)
+					end
+				end
+			elseif (preferredInput == Enum.PreferredInput.Touch and inputType == Enum.UserInputType.Touch) or preferredInput == Enum.PreferredInput.Gamepad then
+				if inputState == Enum.UserInputState.Begin then
+					local _menuId_1 = menuId
+					local _result = openHandlers[_menuId_1]
+					if _result ~= nil then
+						_result(menuId, node)
+					end
 				end
 			end
 		end)
@@ -75214,6 +75469,9 @@ local function SampleContextMenu()
 		LayoutOrder = 4,
 	}), React.createElement(ContextMenu, {
 		menuId = CONTEXT_MENU_ID,
+		config = {
+			fullyVisibleOnly = true,
+		},
 	}, React.createElement(ContextMenuItem, {
 		id = "item_1",
 		text = "Sample 1",
@@ -75318,23 +75576,58 @@ return {
 						<UniqueId name="UniqueId">3bec604a6929ec3f094b186e000029bb</UniqueId>
 					</Properties>
 				</Item>
-				<Item class="ModuleScript" referent="RBX6B11502656D2406FBFFD3BE41DDD92B3">
+				<Item class="ModuleScript" referent="RBX9C85920C92B040E3B45735537C8EA2A6">
 					<Properties>
 						<Content name="LinkedSource"><null></null></Content>
 						<ProtectedString name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
-return nil
+local TS = require(game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("RuntimeLib"))
+local _services = TS.import(script, game:GetService("ReplicatedStorage"), "rbxts_include", "node_modules", "@rbxts", "services")
+local GuiService = _services.GuiService
+local Workspace = _services.Workspace
+local function getViewportSize()
+	return if Workspace.CurrentCamera then Workspace.CurrentCamera.ViewportSize else Vector2.zero
+end
+local function getGuiInset()
+	local topLeft, botRight = GuiService:GetGuiInset()
+	return {
+		topLeft = topLeft,
+		botRight = botRight,
+	}
+end
+local function getSafeZoneSize()
+	local viewportSize = getViewportSize()
+	local topLeft, _ = GuiService:GetGuiInset()
+	return viewportSize - topLeft
+end
+return {
+	getViewportSize = getViewportSize,
+	getGuiInset = getGuiInset,
+	getSafeZoneSize = getSafeZoneSize,
+}
 ]]></ProtectedString>
-						<string name="ScriptGuid">{1F80D6C9-C4D9-4D80-B004-CA53F9AFDC41}</string>
+						<string name="ScriptGuid">{16D1E403-0F56-4991-A534-8D470DFB0DF1}</string>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
 						<bool name="DefinesCapabilities">false</bool>
 						<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
-						<string name="Name">utilities</string>
+						<string name="Name">utlilities</string>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
-						<UniqueId name="UniqueId">49c0d30a17fa93f3094e156400002ad6</UniqueId>
+						<UniqueId name="UniqueId">1448bd327719ecb30950289900002ded</UniqueId>
 					</Properties>
 				</Item>
+			</Item>
+			<Item class="Folder" referent="RBX481762ADB2CA42CE9CDCDE90D352F7FE">
+				<Properties>
+					<BinaryString name="AttributesSerialize"></BinaryString>
+					<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+					<bool name="DefinesCapabilities">false</bool>
+					<UniqueId name="HistoryId">00000000000000000000000000000000</UniqueId>
+					<string name="Name">types</string>
+					<int64 name="SourceAssetId">-1</int64>
+					<BinaryString name="Tags"></BinaryString>
+					<UniqueId name="UniqueId">1448bd327719ecb309502899000029d8</UniqueId>
+				</Properties>
 			</Item>
 		</Item>
 	</Item>
