@@ -1,3 +1,5 @@
+import { UserInputService } from '@rbxts/services';
+
 type OpenHandler = (menuId: string,node?: GuiObject) => void;
 
 const triggers = new Map<string,Set<GuiObject>>();
@@ -30,9 +32,17 @@ export function registerTrigger(menuId: string,node?: GuiObject) {
 
 		const conn = (node.InputBegan as RBXScriptSignal<(i: InputObject,p: boolean) => void>).Connect((input: InputObject,processed: boolean) => {
 			if (processed) return;
-			if (input.UserInputType === Enum.UserInputType.MouseButton2) {
-				
-				openHandlers.get(menuId)?.(menuId,node);
+
+			const preferredInput = UserInputService.PreferredInput;
+			const inputType: Enum.UserInputType = input.UserInputType;
+			const inputState: Enum.UserInputState = input.UserInputState;
+
+			if (preferredInput === Enum.PreferredInput.KeyboardAndMouse) {
+				if (inputType === Enum.UserInputType.MouseButton2)
+					openHandlers.get(menuId)?.(menuId,node);
+			} else if ((preferredInput === Enum.PreferredInput.Touch && inputType === Enum.UserInputType.Touch) || preferredInput === Enum.PreferredInput.Gamepad) {
+				if (inputState === Enum.UserInputState.Begin)
+					openHandlers.get(menuId)?.(menuId,node);
 			}
 		});
 		conns.set(node,conn);
