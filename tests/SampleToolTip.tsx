@@ -23,8 +23,8 @@ export function SampleToolTip({ calculateProps }: ToolTipSampleProps) {
 	const btnToolTip = useToolTip(testBtnRef,{
 		content: "A tooltip testing description.",
 		delayMs: 0,
-		positioningMode: ToolTipPosition.MouseBased,
-		anchorPos: new Vector2(0.5,1.25)
+		positioningMode: ToolTipPosition.TargetRelative,
+		anchorPos: new Vector2(0.5,1.05)
 	},_calculateProps);
 
 	return (
